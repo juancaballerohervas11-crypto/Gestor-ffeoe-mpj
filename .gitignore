@@ -1,0 +1,43 @@
+# --- Entornos de Desarrollo ---
+.vscode/
+.idea/
+*.swp
+*.log
+.DS_Store
+Thumbs.db
+
+# --- Python (Si el Alumno A elige Django/FastAPI) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+build/
+dist/
+
+# --- PHP (Si el Alumno A elige Symfony/Vanilla) ---
+vendor/
+.phpunit.result.cache
+.php_cs.cache
+composer.phar
+config/secrets/*.php
+
+# --- Frontend (React / Vue / Node.js) ---
+node_modules/
+dist/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Archivos del Proyecto / Subidas ---
+# No queremos subir los PDFs reales de los alumnos al repo
+backend/uploads/*.pdf
+!backend/uploads/.gitkeep
