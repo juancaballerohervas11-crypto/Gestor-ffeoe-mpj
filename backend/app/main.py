@@ -18,11 +18,12 @@ models.Base.metadata.create_all(bind=engine)
 
 
 
+
 #   INICIALIZACIÓN DE LA APP
 
 app = FastAPI(
     title="Sistema de Gestión FFOE",
-    description="API profesional para la gestión de prácticas, alumnos y empresas.",
+    description="API de Gestión de prácticas para alumnado de Formación Profesional.",
     version="1.0.0"
 )
 
@@ -45,6 +46,7 @@ async def custom_swagger_ui_html():
 
 
 
+
 #   CONFIGURACIÓN DE CORS
 
 app.add_middleware(
@@ -54,6 +56,7 @@ app.add_middleware(
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],
 )
+
 
 
 
@@ -72,6 +75,7 @@ def read_root():
         "estado": "Online",
         "documentacion": "/docs"
     }
+
 
 
 

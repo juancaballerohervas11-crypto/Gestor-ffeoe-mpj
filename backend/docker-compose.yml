@@ -4,7 +4,6 @@ services:
     container_name: mysql_gestor
     restart: always
     environment:
-      # Configuración de la base de datos
       MYSQL_ROOT_PASSWORD: "2b295fed2ac875775c825fbe2ba996842d09ebc3381cf148b81a68a7a0236373"
       MYSQL_DATABASE: "gestor_ffeoe"
     ports:

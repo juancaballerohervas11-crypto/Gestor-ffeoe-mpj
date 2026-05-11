@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from . import database, models, schemas
 from fastapi import FastAPI
+
     
 app = FastAPI(
     title="Gestor FFEOE",
@@ -74,3 +75,21 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
 
     return user
+
+
+
+
+
+#   VALIDACION DE PERMISOS DE USUARIO
+
+class RoleChecker:
+    def __init__(self, allowed_roles: list):
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user: models.User = Depends(get_current_user)):
+        if current_user.role not in self.allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes los permisos necesarios para realizar esta acción"
+            )
+        return current_user

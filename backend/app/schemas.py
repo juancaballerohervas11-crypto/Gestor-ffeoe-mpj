@@ -57,6 +57,8 @@ class EmpresaOut(BaseModel):
     class Config:
         from_attributes = True
 
+
+
 #   ESQUEMA DE ALUMNO
 
 class AlumnoOut(BaseModel):
@@ -69,6 +71,8 @@ class AlumnoOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
 
 #   ESQUEMA CONTACTO
 
@@ -85,6 +89,8 @@ class ContactoBase(BaseModel):
     
     class Config:
         from_attributes=True
+
+
 
 
 # ESQUEMAS DE CREACIÓN DE EMPRESAS Y ALUMNOS
@@ -165,7 +171,6 @@ class ContactoUpdate():
     
     class Config:
         from_attributes = True
-
 
 
 
