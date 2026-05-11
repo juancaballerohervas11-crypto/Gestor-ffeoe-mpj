@@ -1,7 +1,7 @@
 # Manual de uso Gestor FFEOE
-**Creado por:** Marcos Aragón Romero
+**Creado por:** Marcos Aragón Romero y Juan Caballero. 
 
->El backend del proyecto, así como toda la documentación de dicho backend ha sido desarrollado por Marcos Aragón Romero con ayuda de IA, para un trabajo conjunto con otros alumnos del IES Politécnico Hermenegildo Lanz.  
+>El backend del proyectoha sido desarrollado por Marcos Aragón Romero con ayuda de IA, para un trabajo conjunto con otros alumnos del IES Politécnico Hermenegildo Lanz.  
 ***IMPORTANTE:** todo el código está revisado por Juan caballero Hervás y comprendo por completo el funcionamiento del mismo. La IA ha sido simplemente un apoyo*
 
 
