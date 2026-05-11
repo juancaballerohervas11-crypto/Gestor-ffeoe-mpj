@@ -2,7 +2,7 @@
 **Creado por:** Marcos Aragón Romero
 
 >El backend del proyecto, así como toda la documentación de dicho backend ha sido desarrollado por Marcos Aragón Romero con ayuda de IA, para un trabajo conjunto con otros alumnos del IES Politécnico Hermenegildo Lanz.  
-***IMPORTANTE:** todo el código está revisado y comprendo por completo el funcionamiento del mismo. La IA ha sido simplemente un apoyo*
+***IMPORTANTE:** todo el código está revisado por Juan caballero Hervás y comprendo por completo el funcionamiento del mismo. La IA ha sido simplemente un apoyo*
 
 
 ***Nota:** Este archivo resume el contenido de los manuales de la base de datos y de instalación de la API de forma no visual y menos exhaustiva. En caso de necesitar ver algo como el contenido del archivo docker-compose, abra los archivos `.pdf`*
