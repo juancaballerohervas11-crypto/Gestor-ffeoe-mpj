@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: API GestorFFEOE-HLANZ
+  description: API completa para la gestión de prácticas FCT/Dual del IES Hermenegildo Lanz.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Servidor de desarrollo
+
+components:
+  securitySchemes:
+    OAuth2PasswordBearer:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: /api/v1/login
+          scopes: {}
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        email: { type: string, format: email }
+        full_name: { type: string }
+        role: { type: string, enum: [admin, profesor, alumno, empresa] }
+      required: [email, full_name, role]
+
+    UserCreate:
+      type: object
+      properties:
+        email: { type: string, format: email }
+        full_name: { type: string }
+        password: { type: string, format: password }
+      required: [email, full_name, password]
+
+    Alumno:
+      type: object
+      properties:
+        id: { type: integer }
+        nombre: { type: string }
+        apellido: { type: string }
+        email: { type: string, format: email }
+        registrado_por: { type: integer }
+        empresa_asignada_id: { type: integer, nullable: true }
+      required: [nombre, apellido, email, registrado_por]
+
+    Empresa:
+      type: object
+      properties:
+        id: { type: integer }
+        nombre: { type: string }
+        cif: { type: string }
+        contacto: { type: string }
+        plazas_totales: { type: integer }
+        registrado_por: { type: integer }
+      required: [nombre, cif, contacto, plazas_totales, registrado_por]
+
+    Contacto:
+      type: object
+      properties:
+        id: { type: integer }
+        profesor_id: { type: integer }
+        nombre_profesor: { type: string }
+        empresa_id: { type: integer }
+        estado: { type: string, enum: [Pendiente, Aprobado, Finalizado, Cancelado, Acepta] }
+        fecha_inicio: { type: string, format: date }
+        fecha_fin: { type: string, format: date }
+        horas_totales: { type: integer }
+        plazas_ofrecidas: { type: integer }
+        observaciones: { type: string, nullable: true }
+        fecha_contacto: { type: string, format: date }
+      required: [profesor_id, empresa_id, estado, fecha_inicio, fecha_fin, horas_totales, plazas_ofrecidas, fecha_contacto]
+
+security:
+  - OAuth2PasswordBearer: []
+
+paths:
+  /login:
+    post:
+      tags: [Autenticación]
+      summary: Iniciar sesión
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username: { type: string, description: "Email del usuario" }
+                password: { type: string }
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Credenciales inválidas
+
+  /alumnos:
+    get:
+      tags: [Alumnos]
+      summary: Listar todos los alumnos
+      responses:
+        '200':
+          description: Lista de alumnos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Alumno' }
+    post:
+      tags: [Alumnos]
+      summary: Crear alumno manualmente
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Alumno' }
+      responses:
+        '201':
+          description: Alumno creado
+
+  /alumnos/importar-csv:
+    post:
+      tags: [Alumnos]
+      summary: Importar alumnos desde CSV
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '201':
+          description: Importación exitosa
+
+  /empresas:
+    get:
+      tags: [Empresas]
+      summary: Listar empresas
+      responses:
+        '200':
+          description: Lista de empresas
+    post:
+      tags: [Empresas]
+      summary: Crear empresa
+      responses:
+        '201':
+          description: Empresa creada
+
+  /contactos:
+    get:
+      tags: [Contactos y Asignaciones]
+      summary: Listar todos los contactos
+    post:
+      tags: [Contactos y Asignaciones]
+      summary: Registrar nuevo contacto con empresa
+      responses:
+        '201':
+          description: Contacto registrado
+
+  /asignaciones/{alumno_id}/{empresa_id}:
+    post:
+      tags: [Contactos y Asignaciones]
+      summary: Asignar alumno a empresa
+      parameters:
+        - name: alumno_id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: empresa_id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Asignación exitosa
+
+  /profesores:
+    get:
+      tags: [Profesores]
+      summary: Listar profesores y administradores
+    post:
+      tags: [Profesores]
+      summary: Crear nuevo profesor (Solo Admin )
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCreate' }
+      responses:
+        '201':
+          description: Profesor creado
