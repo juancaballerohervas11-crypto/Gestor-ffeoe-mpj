@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from .database import Base
-from datetime import datetime
+from datetime import datetime, timezone
 
 class User(Base):
     __tablename__ = "users"
@@ -26,7 +26,11 @@ class Empresa(Base):
     contacto = Column(String(255), nullable=True)
 
     # Para borrar el registro de contactos junto con la empresa
+    historial_contactos = relationship(
+    "ContactoEmpresa",
+    back_populates="empresa",
     cascade="all, delete-orphan"
+    )
     
     # total de plazas acordadas
     plazas_totales = Column(Integer, default=0)
@@ -48,6 +52,8 @@ class Alumno(Base):
     registrado_por = Column(Integer, ForeignKey("users.id"))
     
     empresa_asignada_id = Column(Integer, ForeignKey("empresas.id"), nullable=True)
+    empresa_asignada = relationship("Empresa")  # ← añadir esta línea
+
 
     profesor = relationship("User", back_populates="alumnos_registrados")
 
@@ -72,7 +78,8 @@ class ContactoEmpresa(Base):
     
     plazas_ofrecidas = Column(Integer, default=0)
     observaciones = Column(String(500), nullable=True)
-    fecha_contacto = Column(DateTime, default=datetime.utcnow)
+    fecha_contacto = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
 
     # Relaciones para poder hacer consultas cruzadas
     empresa = relationship("Empresa", back_populates="historial_contactos")

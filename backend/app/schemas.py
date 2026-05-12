@@ -158,7 +158,7 @@ class ContactoOut(ContactoCreate):
 
 
 #   EDITAR CONTACTO
-class ContactoUpdate():
+class ContactoUpdate(BaseModel):
     empresa_id: int
     estado: str  # Ejemplo: 'Acepta', 'Rechaza'
     
