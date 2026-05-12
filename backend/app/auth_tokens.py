@@ -2,23 +2,25 @@ from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,timezone
 from typing import Optional
 from . import database, models, schemas
-from fastapi import FastAPI
+from dotenv import load_dotenv
+import os
+from pathlib import Path
+
+
+
+
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
     
-app = FastAPI(
-    title="Gestor FFEOE",
-    # Esto mantiene la autorización aún recargando la pagina del Swagger
-    swagger_ui_parameters={"persistAuthorization": True} 
-)
 
 # Configuración básica 
 
-SECRET_KEY = "3a5878ad1068da64a065f1f68b00a17aa2c4ad33a84effe1c5ad499ef2c7dda5"
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 120   # 2 horas
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -31,9 +33,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

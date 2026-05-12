@@ -1,13 +1,20 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+import os
+from pathlib import Path
 
 
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:2b295fed2ac875775c825fbe2ba996842d09ebc3381cf148b81a68a7a0236373@localhost:3307/gestor_ffeoe"
+
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 # Fuerza el plugin de password normal
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
+    DATABASE_URL,
     connect_args={
         
         # Esto asegura una conexión limpia

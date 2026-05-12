@@ -24,8 +24,9 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="Sistema de Gestión FFOE",
     description="API de Gestión de prácticas para alumnado de Formación Profesional.",
-    version="1.0.0"
-)
+    version="1.0.0",
+    swagger_ui_parameters={"persistAuthorization": True} 
+    )
 
 
 
@@ -51,7 +52,8 @@ async def custom_swagger_ui_html():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  #poner la URL del frontend
+    # El puerto 5173 es el predeterminado de Vite para el frontend
+    allow_origins=["http://localhost:5173"],  # Mas tarde se añade la URL: allow_origins=["http://localhost:5173", "URL DEL PROYECTO"]
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],
