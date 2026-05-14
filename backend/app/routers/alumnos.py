@@ -79,8 +79,8 @@ async def importar_alumnos(
         )
         db.add(nuevo)
         creados += 1
-
-    db.commit()
+        db.commit()
+        
     return {"nuevos_alumnos": creados, "saltados": saltados}
 
 

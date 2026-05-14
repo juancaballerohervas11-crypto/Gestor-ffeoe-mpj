@@ -11,7 +11,7 @@ permiso_admin_prof = RoleChecker(["admin", "profesor"])
 
 
 #   CREAR
-@router.post("/contactos/", response_model=schemas.ContactoOut, status_code=201)
+@router.post("/contactos", response_model=schemas.ContactoOut, status_code=201)
 def registrar_contacto(
     contacto: schemas.ContactoCreate,
     db: Session = Depends(get_db),
@@ -55,7 +55,7 @@ def eliminar_contacto(
 
 #   LISTAR
 
-@router.get("/contactos/", response_model=List[schemas.ContactoOut])
+@router.get("/contactos", response_model=List[schemas.ContactoOut])
 def listar_todos_los_contactos(
     db: Session = Depends(get_db),
     _ = Depends(permiso_admin_prof)

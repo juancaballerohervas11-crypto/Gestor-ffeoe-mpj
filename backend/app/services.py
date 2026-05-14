@@ -10,7 +10,6 @@ def crear_contacto(db: Session, contacto: schemas.ContactoCreate, user: models.U
     nuevo_contacto = models.ContactoEmpresa(
         **contacto.model_dump(),
         profesor_id=user.id,
-        nombre_profesor=user.full_name
     )
     if contacto.estado == "Acepta":
         empresa.plazas_totales += contacto.plazas_ofrecidas
@@ -27,9 +26,9 @@ def editar_contacto(db: Session, contacto_id: int, contacto_actualizado: schemas
     estado_anterior = contacto_db.estado
     estado_nuevo = contacto_actualizado.estado
 
-    if estado_anterior == "Acepta" and estado_nuevo != "Acepta":
+    if estado_anterior == "acepta" and estado_nuevo != "acepta":
         empresa.plazas_totales -= contacto_db.plazas_ofrecidas
-    elif estado_anterior != "Acepta" and estado_nuevo == "Acepta":
+    elif estado_anterior != "acepta" and estado_nuevo == "acepta":
         empresa.plazas_totales += contacto_actualizado.plazas_ofrecidas
 
     contacto_data = contacto_actualizado.model_dump(exclude_unset=True)
