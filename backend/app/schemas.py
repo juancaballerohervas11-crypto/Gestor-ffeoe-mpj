@@ -53,6 +53,7 @@ class EmpresaOut(BaseModel):
     cif: str
     contacto: Optional[str] = None
     registrado_por: int
+    plazas_totales: int = 0 
 
     class Config:
         from_attributes = True
@@ -99,6 +100,7 @@ class EmpresaCreate(BaseModel):
     nombre: str
     cif: str
     contacto: Optional[str] = None
+    plazas_totales: int = 0
     # plazas_totales empieza en 0 por defecto en el modelo
 
 class AlumnoCreate(BaseModel):

@@ -64,11 +64,11 @@ app.add_middleware(
 
 #   INCLUSIÓN DE ROUTERS
 
-app.include_router(usuarios.router)
-app.include_router(alumnos.router)
-app.include_router(empresas.router)
-app.include_router(contactos.router)
-app.include_router(profesores.router)
+app.include_router(usuarios.router, prefix="/api/v1")
+app.include_router(alumnos.router, prefix="/api/v1")
+app.include_router(empresas.router, prefix="/api/v1")
+app.include_router(contactos.router, prefix="/api/v1")
+app.include_router(profesores.router, prefix="/api/v1")
 
 @app.get("/", tags=["General"])
 def read_root():

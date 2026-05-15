@@ -15,8 +15,6 @@ router = APIRouter(
 permiso_admin_prof = RoleChecker(["admin", "profesor"])
 permiso_admin = RoleChecker(["admin"])
 
-
-
 #   LISTAR
 
 @router.get("/", response_model=List[schemas.EmpresaOut])
@@ -25,6 +23,14 @@ def listar_empresas(
 ):
     return db.query(models.Empresa).all()
 
+#   VER UNA EMPRESA
+
+@router.get("/{empresa_id}", response_model=schemas.EmpresaOut)
+def obtener_empresa(
+    empresa_id: int,
+    db: Session = Depends(get_db),
+):
+    return utils.empresa_existe(db, empresa_id)
 
 #   CREAR
 
@@ -37,8 +43,8 @@ def crear_empresa(
 ):
     return services.crear_empresa(db, empresa, current_user)
 
-
 #   IMPORTAR POR CSV
+
 @router.post("/importar-empresas", status_code=201)
 async def importar_empresas(
     file: UploadFile = File(...),
@@ -85,9 +91,6 @@ async def importar_empresas(
         "duplicados_o_invalidos_saltados": registros_saltados
     }
 
-
-
-
 #   EDITAR
 
 @router.put("/{empresa_id}", response_model=schemas.EmpresaOut)
@@ -99,9 +102,6 @@ def actualizar_empresa(
 ):
     return services.editar_empresa(db, empresa_id, datos)
 
-
-
-
 #   ELIMINAR
 
 @router.delete("/{empresa_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -111,11 +111,6 @@ def eliminar_empresa(
     _ = Depends(permiso_admin_prof)
 ):
     services.eliminar_empresa(db, empresa_id)
-
-
-
-
-
 
 #   VER CONTACTOS CON LA EMPRESA
 
