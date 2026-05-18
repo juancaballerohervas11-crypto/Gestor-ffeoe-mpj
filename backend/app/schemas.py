@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -69,6 +69,9 @@ class AlumnoOut(BaseModel):
     email: EmailStr
     registrado_por: Optional[int]=None
     empresa_asignada_id: Optional[int]=None
+    ciclo_id: Optional[int] = None
+    telefono: Optional[str] = None
+    cv_path: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -107,6 +110,9 @@ class AlumnoCreate(BaseModel):
     nombre: str
     apellido: str
     email: Optional[EmailStr]
+    ciclo_id: Optional[int] = None
+    telefono: Optional[str] = None
+    cv_path: Optional[str] = None
 
 
 
@@ -137,6 +143,13 @@ class AlumnoUpdate(BaseModel):
     nombre: Optional[str] = None
     apellido: Optional[str] = None
     email: Optional[EmailStr] = None
+    ciclo_id: Optional[int] = None
+    telefono: Optional[str] = None
+    cv_path: Optional[str] = None
+
+class AlumnoPerfilUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    telefono: Optional[str] = None
 
 class ProfesorUpdate(BaseModel):
     full_name: Optional[str] = None
@@ -185,3 +198,30 @@ class AsignacionAlumno(BaseModel):
     empresa_id: int
     fecha_inicio: datetime
     observaciones: Optional[str] = None
+
+
+# ESQUEMAS DE CICLOS
+
+class CicloBase(BaseModel):
+    nombre: str
+    ano_inicio: int
+    ano_fin: int
+
+class CicloCreate(CicloBase):
+    pass
+
+class CicloUpdate(BaseModel):
+    nombre: Optional[str] = None
+    ano_inicio: Optional[int] = None
+    ano_fin: Optional[int] = None
+
+class CicloOut(CicloBase):
+    id: int
+    profesores: List[UserOut] = []
+    alumnos: List[AlumnoOut] = []
+
+    class Config:
+        from_attributes = True
+
+class AsignarProfesor(BaseModel):
+    profesor_id: int

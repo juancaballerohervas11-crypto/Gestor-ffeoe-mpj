@@ -48,6 +48,16 @@ def profesor_existe(db: Session, profesor_id: int):
     return user
 
 
+def ciclo_existe(db: Session, ciclo_id: int):
+    ciclo = db.query(models.Ciclo).filter(models.Ciclo.id == ciclo_id).first()
+    if not ciclo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"El ciclo con ID {ciclo_id} no existe"
+        )
+    return ciclo
+
+
 
 
 
