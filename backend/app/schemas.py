@@ -53,6 +53,7 @@ class EmpresaOut(BaseModel):
     cif: str
     contacto: Optional[str] = None
     registrado_por: int
+
     plazas_totales: int = 0 
 
     class Config:
@@ -224,4 +225,4 @@ class CicloOut(CicloBase):
         from_attributes = True
 
 class AsignarProfesor(BaseModel):
-    profesor_id: int
+    profesor_id: int
