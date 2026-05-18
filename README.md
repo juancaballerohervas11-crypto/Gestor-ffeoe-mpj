@@ -18,11 +18,11 @@ En este repositorio vamos a ver el flujo de trabajo de un Gestor web para la asi
 
 ##  Equipo y Roles
 
-*   **Alumno A**: Especialista en Backend (API, Base de Datos, Lógica de Negocio).
+*   **Marcos**: Especialista en Backend (API, Base de Datos, Lógica de Negocio).
 
-*   **Alumno B**: Especialista en Frontend (Interfaz de Usuario, Dashboard, UX).
+*   **Pedro**: Especialista en Frontend (Interfaz de Usuario, Dashboard, UX).
 
-*   **Alumno C**: Especialista en QA, IA y Documentación (Calidad, Seguridad, Tests).
+*   **Juan**: Especialista en QA, IA y Documentación (Calidad, Seguridad, Tests).
 
 
 
@@ -32,11 +32,11 @@ En este repositorio vamos a ver el flujo de trabajo de un Gestor web para la asi
 
 ##  Stack Tecnológico
 
-*   **Backend**: PHP (Symfony/Vanilla) / Python (Django/FastAPI) [A confirmar por el equipo].
+*   **Backend**:  Python (Django/FastAPI).
 
-*   **Frontend**: JavaScript (React/Vue/Vanilla).
+*   **Frontend**: JavaScript (React/Vue).
 
-*   **Base de Datos**: Relacional (MySQL/PostgreSQL).
+*   **Base de Datos**: Relacional (MySQL).
 
 *   **Autenticación**: JSON Web Tokens (JWT).
 
@@ -72,6 +72,7 @@ Actualmente hemos completado:
 
 
 ##  Cómo Contribuir
-Para mantener la calidad del código, todos los miembros del equipo deben seguir las normas detalladas en nuestro [Manual de Contribución](./CONTRIBUTING.md). **Recordatorio: Funciones < 20 líneas y revisión de código obligatoria.**
-
-Para mantener la calidad del código, todos los miembros del equipo deben seguir las normas detalladas en nuestro [Manual de Contribución](./CONTRIBUTING.md). **Recordatorio: Funciones < 20 líneas y revisión de código obligatoria.**
+Para garantizar un código limpio y mantenible, el equipo sigue estas reglas estrictas:
+1.  **Regla de las 20 líneas**: Las funciones del backend no deben exceder las 20 líneas de código (Clean Code).
+2.  **Tipado Estricto**: Uso obligatorio de TypeScript en el frontend y Type Hints en el backend.
+3.  **Unit Testing**: Validación obligatoria de cada funcionalidad mediante tests unitarios antes de la integración.
