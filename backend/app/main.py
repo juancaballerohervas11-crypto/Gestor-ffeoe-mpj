@@ -132,11 +132,11 @@ app.add_middleware(
     # El puerto 5500/5501 es el de VS Code Live Server
     allow_origins=[
         "http://10.12.0.65:5173",
-        "http://[IP_ADDRESS]",
+        "http://[10.12.0.65]",
         "http://localhost:5500",
-        "http://[IP_ADDRESS]",
+        "http://[10.12.0.65]",
         "http://localhost:5501",
-        "http://[IP_ADDRESS]",
+        "http://[10.12.0.65]",
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.

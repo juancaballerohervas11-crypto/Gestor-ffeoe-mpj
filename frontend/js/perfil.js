@@ -1,7 +1,7 @@
 // js/perfil.js
 // Modal de perfil de usuario (boton del sidebar)
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE_URL = 'http://10.12.0.65:5173';
 
 export async function abrirModalPerfil() {
     const token = localStorage.getItem('token');
