@@ -2,7 +2,7 @@
 import { abrirModalPerfil } from './perfil.js';
 import { loadPlazasData, initPlazasEvents } from './plazas.js';
 
-const API_BASE_URL = 'http://10.12.0.65:5173'; // Asegúrate de que el backend esté corriendo en este puerto
+const API_BASE_URL = 'http://10.12.0.65:8000'; // Asegúrate de que el backend esté corriendo en este puerto
 
 // Variables de estado global
 let currentUserRole = null;

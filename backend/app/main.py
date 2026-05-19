@@ -131,13 +131,13 @@ app.add_middleware(
     # El puerto 5173 es el predeterminado de Vite para el frontend
     # El puerto 5500/5501 es el de VS Code Live Server
     allow_origins=[
-        "http://10.12.0.65:5173",
-        "http://[10.12.0.65]",
-        "http://localhost:5500",
-        "http://[10.12.0.65]",
-        "http://localhost:5501",
-        "http://[10.12.0.65]",
-    ],
+    "http://10.12.0.65:5173",
+    "http://localhost:5173",      
+    "http://localhost:5500",
+    "http://localhost:5501",
+    "http://localhost:8000",
+    "http://10.12.0.65",
+],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],
