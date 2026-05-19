@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine
 from . import models
-from .routers import usuarios, alumnos, empresas, contactos, profesores
+from .routers import usuarios, alumnos, empresas, contactos, profesores, ciclos
 from fastapi import Depends
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -53,7 +53,7 @@ async def custom_swagger_ui_html():
 app.add_middleware(
     CORSMiddleware,
     # El puerto 5173 es el predeterminado de Vite para el frontend
-    allow_origins=["http://localhost:5173"],  # Mas tarde se añade la URL: allow_origins=["http://localhost:5173", "URL DEL PROYECTO"]
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Mas tarde se añade la URL: allow_origins=["http://localhost:5173", "URL DEL PROYECTO"]
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],
@@ -69,6 +69,7 @@ app.include_router(alumnos.router, prefix="/api/v1")
 app.include_router(empresas.router, prefix="/api/v1")
 app.include_router(contactos.router, prefix="/api/v1")
 app.include_router(profesores.router, prefix="/api/v1")
+app.include_router(ciclos.router, prefix="/api/v1")
 
 @app.get("/", tags=["General"])
 def read_root():
@@ -94,8 +95,12 @@ def obtener_resumen_gestion(
     # 2 Total de plazas disponibles en el sistema
     plazas_libres_totales = db.query(func.sum(models.Empresa.plazas_totales)).scalar() or 0
 
-    # 3 Listado completo de empresas (Ordenadas por cantidad de plazas)
-    
+    # 3 Profesores, Empresas, y Ciclos totales en el sistema
+    total_profesores = db.query(models.User).filter(models.User.role.in_(["admin", "profesor", "coordinador"])).count()
+    total_empresas = db.query(models.Empresa).count()
+    total_ciclos = db.query(models.Ciclo).count()
+
+    # 4 Listado completo de empresas (Ordenadas por cantidad de plazas)
     ofertas_empresas = db.query(models.Empresa)\
         .filter(models.Empresa.plazas_totales > 0)\
         .order_by(models.Empresa.plazas_totales.desc())\
@@ -108,10 +113,17 @@ def obtener_resumen_gestion(
             "pendientes": alumnos_sin_empresa
         },
         "empresas": {
+            "total": total_empresas,
             "plazas_disponibles_totales": plazas_libres_totales,
             "listado_ofertas": [
                 {"nombre": e.nombre, "plazas": e.plazas_totales, "contacto": e.contacto} 
                 for e in ofertas_empresas
             ]
+        },
+        "profesores": {
+            "total": total_profesores
+        },
+        "ciclos": {
+            "total": total_ciclos
         }
     }

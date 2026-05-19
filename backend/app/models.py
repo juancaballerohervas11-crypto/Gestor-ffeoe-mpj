@@ -1,7 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Table
 from sqlalchemy.orm import relationship
 from .database import Base
 from datetime import datetime, timezone
+
+profesores_ciclos = Table(
+    'profesores_ciclos', Base.metadata,
+    Column('profesor_id', Integer, ForeignKey('users.id')),
+    Column('ciclo_id', Integer, ForeignKey('ciclos.id'))
+)
 
 class User(Base):
     __tablename__ = "users"
@@ -16,6 +22,20 @@ class User(Base):
     empresas_registradas = relationship("Empresa", back_populates="profesor")
     alumnos_registrados = relationship("Alumno", back_populates="profesor")
     contactos_realizados = relationship("ContactoEmpresa", back_populates="profesor")
+    ciclos = relationship("Ciclo", secondary=profesores_ciclos, back_populates="profesores")
+
+class Ciclo(Base):
+    __tablename__ = "ciclos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(255), nullable=False)
+    ano_inicio = Column(Integer, nullable=False)
+    ano_fin = Column(Integer, nullable=False)
+
+    # Relación M:N con User (Profesor)
+    profesores = relationship("User", secondary=profesores_ciclos, back_populates="ciclos")
+    # Relación 1:N con Alumno
+    alumnos = relationship("Alumno", back_populates="ciclo")
 
 class Empresa(Base):
     __tablename__ = "empresas"
@@ -54,6 +74,11 @@ class Alumno(Base):
     empresa_asignada_id = Column(Integer, ForeignKey("empresas.id"), nullable=True)
     empresa_asignada = relationship("Empresa")  # ← añadir esta línea
 
+    ciclo_id = Column(Integer, ForeignKey("ciclos.id"), nullable=True)
+    ciclo = relationship("Ciclo", back_populates="alumnos")
+
+    telefono = Column(String(20), nullable=True)
+    cv_path = Column(String(255), nullable=True)
 
     profesor = relationship("User", back_populates="alumnos_registrados")
 
