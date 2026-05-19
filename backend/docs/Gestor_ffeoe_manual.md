@@ -5,7 +5,7 @@
 ***IMPORTANTE:** todo el código está revisado por Juan caballero Hervás y comprendo por completo el funcionamiento del mismo. La IA ha sido simplemente un apoyo*
 
 
-***Nota:** Este archivo resume el contenido de los manuales de la base de datos y de instalación de la API de forma no visual y menos exhaustiva. En caso de necesitar ver algo como el contenido del archivo docker-compose, abra los archivos `.pdf`*
+
 
 
 ---
@@ -84,10 +84,14 @@ Este apartado explica como iniciar la API, incluyendo la instalación de paquete
 
 ### FORMATO:
 
-nombre,apellido,email   
-Juan,García,juan.garcia@email.com   
-Lucía,Pérez,lucia.perez@email.com  
+```
+nombre,apellido,email,dni,telefono
+Juan,García,juan.garcia@email.com,12345678A,600111222
+Lucía,Pérez,lucia.perez@email.com,87654321B,600333444
+```
 
+**Columnas obligatorias:** `nombre`, `email`  
+**Columnas opcionales:** `apellido`, `dni`, `telefono`
 
 ---
 
@@ -95,17 +99,22 @@ Lucía,Pérez,lucia.perez@email.com
 ## Importación de EMPRESAS
 
 
-### FORMATO:
+### FORMATO COMPLETO:
 
-nombre,cif,contacto   
-Empresa Alpha,A12345678,Pepito Perez   
-Empresa Beta,B98765432,Maria Garcia   
+```
+nombre,cif,plazas,direccion,web,email,telefono,contacto_nombre,contacto_email,contacto_telefono,  contacto_dni
+Empresa Alpha,A12345678,3,Calle Ejemplo 12 Madrid,https://alpha.com,info@alpha.com,910111222,Ana Martínez,ana@alpha.com,600111333,12345678A
+Empresa Beta,B98765432,0,Avenida Principal 5 Sevilla,https://beta.es,contacto@beta.es,910444555,Pepito Pérez,pepito@beta.es,600444666,98765432B
+```
 
+**Columnas obligatorias:** `nombre`, `cif`  
+**Columnas opcionales:** `plazas`, `direccion`, `web`, `email`, `telefono`, `contacto_nombre`, `contacto_email`, `contacto_telefono`, `contacto_dni`
 
-### En caso de que la empresa oferte plazas:
+### FORMATO MÍNIMO (sin datos adicionales):
 
-*Se añaden las plazas al final*
+```
+nombre,cif
+Empresa Alpha,A12345678
+Empresa Beta,B98765432
+```
 
-nombre,cif,contacto,**`plazas`**  
-Empresa Alpha,A12345678,Pepito Perez,**`3`**  
-Empresa Beta,B98765432,Maria Garcia,**`0`**

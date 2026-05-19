@@ -4,8 +4,8 @@
 
 ## 1. Reglas de Oro del Código (Clean Code)
 *   **Límite de 20 líneas**: Ninguna función o método puede superar las 20 líneas de código. Si es más larga, divídela en funciones más pequeñas.
-*   **Nombres Semánticos**: Prohibido usar nombres como `$a` o `var1`. Usa nombres que expliquen qué hace la variable (ej: `$listaAlumnos`, `usuarioLogueado`).
-*   **Tipado Obligatorio**: Se debe usar tipado en los parámetros y retornos de funciones (tanto en PHP como en Python).
+*   **Nombres Semánticos**: Prohibido usar nombres como `a` o `var1`. Usa nombres que expliquen qué hace la variable (ej: `listaAlumnos`, `usuarioLogueado`).
+*   **Tipado Obligatorio**: Se deben usar Type Hints en los parámetros y retornos de funciones Python del backend.
 *   **Arquitectura**: Separación total entre Frontend y Backend. No se permite lógica de negocio en las vistas.
 
 ## 2. Flujo de Trabajo en Git

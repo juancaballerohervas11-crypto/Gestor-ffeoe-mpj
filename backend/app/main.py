@@ -15,6 +15,82 @@ from fastapi.openapi.docs import get_swagger_ui_html
 # lee los modelos de models.py y crea las tablas en MySQL si no existen
 models.Base.metadata.create_all(bind=engine)
 
+#   MIGRACIÓN AUTOMÁTICA DE COLUMNAS (Para bases de datos existentes)
+from sqlalchemy import inspect, text
+def auto_migrate():
+    from .database import SessionLocal
+    db = SessionLocal()
+    try:
+        inspector = inspect(engine)
+        columns = [col['name'] for col in inspector.get_columns('alumnos')]
+        
+        # Check and add tutor_docente_id
+        if 'tutor_docente_id' not in columns:
+            try:
+                db.execute(text("ALTER TABLE alumnos ADD COLUMN tutor_docente_id INT NULL"))
+                db.execute(text("ALTER TABLE alumnos ADD CONSTRAINT fk_alumnos_tutor_docente FOREIGN KEY (tutor_docente_id) REFERENCES users(id)"))
+                print("Auto-migration: Added tutor_docente_id and foreign key to alumnos table")
+            except Exception as e:
+                try:
+                    db.execute(text("ALTER TABLE alumnos ADD COLUMN tutor_docente_id INT NULL"))
+                    print("Auto-migration: Added tutor_docente_id column (sqlite/fallback)")
+                except Exception as ex:
+                    print(f"Auto-migration info: tutor_docente_id column skipped/exists: {ex}")
+        
+        # Check and add tutor_docente_nombre
+        if 'tutor_docente_nombre' not in columns:
+            try:
+                db.execute(text("ALTER TABLE alumnos ADD COLUMN tutor_docente_nombre VARCHAR(255) NULL"))
+                print("Auto-migration: Added tutor_docente_nombre to alumnos table")
+            except Exception as e:
+                print(f"Auto-migration info: tutor_docente_nombre skipped: {e}")
+            
+        # Check and add tutor_laboral_nombre
+        if 'tutor_laboral_nombre' not in columns:
+            try:
+                db.execute(text("ALTER TABLE alumnos ADD COLUMN tutor_laboral_nombre VARCHAR(255) NULL"))
+                print("Auto-migration: Added tutor_laboral_nombre to alumnos table")
+            except Exception as e:
+                print(f"Auto-migration info: tutor_laboral_nombre skipped: {e}")
+            
+        # Check and add tutor_laboral_dni
+        if 'tutor_laboral_dni' not in columns:
+            try:
+                db.execute(text("ALTER TABLE alumnos ADD COLUMN tutor_laboral_dni VARCHAR(50) NULL"))
+                print("Auto-migration: Added tutor_laboral_dni to alumnos table")
+            except Exception as e:
+                print(f"Auto-migration info: tutor_laboral_dni skipped: {e}")
+                
+        # Check and add tutor_laboral_contacto
+        if 'tutor_laboral_contacto' not in columns:
+            try:
+                db.execute(text("ALTER TABLE alumnos ADD COLUMN tutor_laboral_contacto VARCHAR(255) NULL"))
+                print("Auto-migration: Added tutor_laboral_contacto to alumnos table")
+            except Exception as e:
+                print(f"Auto-migration info: tutor_laboral_contacto skipped: {e}")
+            
+        # Check and add profile_pic to users table
+        user_columns = [col['name'] for col in inspector.get_columns('users')]
+        if 'profile_pic' not in user_columns:
+            try:
+                db.execute(text("ALTER TABLE users ADD COLUMN profile_pic LONGTEXT NULL"))
+                print("Auto-migration: Added profile_pic to users table (MySQL)")
+            except Exception as e:
+                try:
+                    db.execute(text("ALTER TABLE users ADD COLUMN profile_pic TEXT NULL"))
+                    print("Auto-migration: Added profile_pic to users table (SQLite/fallback)")
+                except Exception as ex:
+                    print(f"Auto-migration info: profile_pic skipped/exists: {ex}")
+
+        db.commit()
+    except Exception as e:
+        print(f"Auto-migration warning: {e}")
+    finally:
+        db.close()
+
+auto_migrate()
+
+
 
 
 
@@ -53,7 +129,15 @@ async def custom_swagger_ui_html():
 app.add_middleware(
     CORSMiddleware,
     # El puerto 5173 es el predeterminado de Vite para el frontend
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Mas tarde se añade la URL: allow_origins=["http://localhost:5173", "URL DEL PROYECTO"]
+    # El puerto 5500/5501 es el de VS Code Live Server
+    allow_origins=[
+        "http://10.12.0.65:5173",
+        "http://[IP_ADDRESS]",
+        "http://localhost:5500",
+        "http://[IP_ADDRESS]",
+        "http://localhost:5501",
+        "http://[IP_ADDRESS]",
+    ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],

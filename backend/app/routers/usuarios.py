@@ -53,6 +53,25 @@ def registrar_usuario(
     return services.registrar_usuario(db, usuario)
 
 
+#   REGISTRO PÚBLICO ALUMNO
+
+@router.post("/registrar-alumno", response_model=schemas.UserOut, status_code=201)
+def registrar_alumno_publico(
+    reg: schemas.StudentRegister,
+    db: Session = Depends(get_db)
+):
+    return services.registrar_alumno_publico(db, reg)
+
+
+#   LISTADO PÚBLICO DE CICLOS (Para autoregistro de alumnos)
+
+@router.get("/ciclos", response_model=List[schemas.CicloOut])
+def listar_ciclos_publico(
+    db: Session = Depends(get_db)
+):
+    return db.query(models.Ciclo).all()
+
+
 
 #   VER DATOS DE USUARIO
 
@@ -82,21 +101,21 @@ def listar_usuarios(
 @router.put("/{user_id}/role", response_model=schemas.UserOut)
 def cambiar_rol_usuario(
     user_id: int,
-    nuevo_rol: str,
+    new_role: str,
     db: Session = Depends(get_db),
     _ = Depends(permiso_admin)
 ):
-    usuario = utils.profesor_existe(db, user_id)
-    roles_permitidos = ["admin", "profesor", "user"]
-    if nuevo_rol not in roles_permitidos:
+    user_record = utils.profesor_existe(db, user_id)
+    allowed_roles = ["admin", "profesor", "user"]
+    if new_role not in allowed_roles:
         raise HTTPException(
             status_code=400,
-            detail=f"Rol no válido. Los roles permitidos son: {', '.join(roles_permitidos)}"
+            detail=f"Rol no válido. Los roles permitidos son: {', '.join(allowed_roles)}"
         )
-    usuario.role = nuevo_rol
+    user_record.role = new_role
     db.commit()
-    db.refresh(usuario)
-    return usuario
+    db.refresh(user_record)
+    return user_record
 
 
 

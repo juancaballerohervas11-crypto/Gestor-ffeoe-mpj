@@ -52,8 +52,14 @@ def actualizar_profesor(
     profe_id: int,
     datos: schemas.UserUpdate,
     db: Session = Depends(get_db),
-    _ = Depends(permiso_admin_prof)
+    current_user: models.User = Depends(auth_tokens.get_current_user)
 ):
+    # Allow if the user is an admin, professor, OR if they are updating their own profile
+    if current_user.id != profe_id and current_user.role not in ["admin", "profesor"]:
+        raise HTTPException(
+            status_code=403, 
+            detail="No tienes los permisos necesarios para realizar esta acción"
+        )
     try:
         return services.editar_profesor(db, profe_id, datos)
     except IntegrityError:

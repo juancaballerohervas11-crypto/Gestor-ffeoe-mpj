@@ -59,31 +59,41 @@ async def importar_alumnos(
     decoded = content.decode('utf-8')
     reader = csv.DictReader(io.StringIO(decoded))
 
-    creados = 0
-    saltados = 0
+    created = 0
+    skipped = 0
 
     for row in reader:
         email = row.get('email')
         if not email or not row.get('nombre'):
-            saltados += 1
+            skipped += 1
             continue
 
-        existe = db.query(models.Alumno).filter(models.Alumno.email == email).first()
-        if existe:
-            saltados += 1
+        exists = db.query(models.Alumno).filter(models.Alumno.email == email).first()
+        if exists:
+            skipped += 1
             continue
 
-        nuevo = models.Alumno(
+        # Crear cuenta de login correspondiente
+        services.crear_usuario_alumno_si_no_existe(
+            db,
+            email,
+            f"{row.get('nombre')} {row.get('apellido')}",
+            row.get('dni')
+        )
+
+        new_record = models.Alumno(
             nombre=row.get('nombre'),
             apellido=row.get('apellido'),
             email=email,
+            dni=row.get('dni') or None,
+            telefono=row.get('telefono') or None,
             registrado_por=current_user.id
         )
-        db.add(nuevo)
-        creados += 1
+        db.add(new_record)
+        created += 1
 
     db.commit()
-    return {"nuevos_alumnos": creados, "saltados": saltados}
+    return {"new_students": created, "skipped": skipped}
 
 
 
@@ -152,8 +162,8 @@ def actualizar_mi_perfil(
 
     # Validar si el nuevo email ya está en uso por otro alumno
     if datos.email and datos.email != alumno.email:
-        existe = db.query(models.Alumno).filter(models.Alumno.email == datos.email).first()
-        if existe:
+        exists = db.query(models.Alumno).filter(models.Alumno.email == datos.email).first()
+        if exists:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="El email ya está registrado por otro alumno"
@@ -211,7 +221,7 @@ async def subir_mi_cv(
     alumno.cv_path = file_path
     db.commit()
 
-    return {"mensaje": "Currículum subido correctamente", "cv_path": file_path}
+    return {"message": "Currículum subido correctamente", "cv_path": file_path}
 
 
 #   ACCESOS DE GESTORES (ADMIN/PROFESOR) A DETALLES DE ALUMNO

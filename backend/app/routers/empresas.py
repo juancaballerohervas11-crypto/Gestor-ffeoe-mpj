@@ -55,40 +55,47 @@ async def importar_empresas(
     content = await file.read()
     reader = csv.DictReader(io.StringIO(content.decode('utf-8')))
 
-    registros_creados = 0
-    registros_saltados = 0
+    records_created = 0
+    records_skipped = 0
 
     for row in reader:
         nombre = row.get('nombre')
         cif = row.get('cif')
 
         if not nombre or not cif:
-            registros_saltados += 1
+            records_skipped += 1
             continue
 
         if utils.obtener_empresa_por_cif(db, cif):
-            registros_saltados += 1
+            records_skipped += 1
             continue
 
         try:
-            nueva_empresa = models.Empresa(
+            new_company = models.Empresa(
                 nombre=nombre,
                 cif=cif,
-                contacto=row.get('contacto'),
-                plazas_totales=int(row.get('plazas', 0)),
+                plazas_totales=int(row.get('plazas', 0) or 0),
+                direccion=row.get('direccion') or None,
+                web=row.get('web') or None,
+                email=row.get('email') or None,
+                telefono=row.get('telefono') or None,
+                contacto_nombre=row.get('contacto_nombre') or None,
+                contacto_email=row.get('contacto_email') or None,
+                contacto_telefono=row.get('contacto_telefono') or None,
+                contacto_dni=row.get('contacto_dni') or None,
                 registrado_por=current_user.id
             )
-            db.add(nueva_empresa)
-            registros_creados += 1
+            db.add(new_company)
+            records_created += 1
         except ValueError:
-            registros_saltados += 1
+            records_skipped += 1
             continue
 
     db.commit()
     return {
-        "status": "completado",
-        "nuevos_registros": registros_creados,
-        "duplicados_o_invalidos_saltados": registros_saltados
+        "status": "completed",
+        "new_records": records_created,
+        "skipped": records_skipped
     }
 
 #   EDITAR

@@ -3,7 +3,8 @@ from ..database import get_db
 from ..auth_tokens import *
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+
 
 router = APIRouter(tags=["Contactos y Asignaciones"])
 
@@ -87,6 +88,8 @@ def ver_contactos_recientes(
 def asignar_alumno_a_empresa(
     alumno_id: int,
     empresa_id: int,
+    tutor_docente_id: Optional[int] = None,
+    tutor_laboral_nombre: Optional[str] = None,
     db: Session = Depends(get_db),
     _ = Depends(permiso_admin_prof)
 ):
@@ -100,8 +103,31 @@ def asignar_alumno_a_empresa(
 
     alumno.empresa_asignada_id = empresa.id
     empresa.plazas_totales -= 1
+
+    if tutor_docente_id is not None:
+        docente = db.query(models.User).filter(models.User.id == tutor_docente_id).first()
+        if not docente:
+            raise HTTPException(status_code=404, detail="El tutor docente especificado no existe")
+        alumno.tutor_docente_id = tutor_docente_id
+        alumno.tutor_docente_nombre = docente.full_name or docente.email
+
+    # Set workplace tutor details
+    if tutor_laboral_nombre:
+        alumno.tutor_laboral_nombre = tutor_laboral_nombre
+        # If they match the company's contact name, let's copy their details
+        if empresa.contacto_nombre == tutor_laboral_nombre:
+            alumno.tutor_laboral_dni = empresa.contacto_dni
+            alumno.tutor_laboral_contacto = f"{empresa.contacto_email or ''} | {empresa.contacto_telefono or ''}".strip(" | ")
+        else:
+            alumno.tutor_laboral_dni = None
+            alumno.tutor_laboral_contacto = None
+    else:
+        alumno.tutor_laboral_nombre = empresa.contacto_nombre or "Pendiente de Asignar"
+        alumno.tutor_laboral_dni = empresa.contacto_dni
+        alumno.tutor_laboral_contacto = f"{empresa.contacto_email or ''} | {empresa.contacto_telefono or ''}".strip(" | ")
+
     db.commit()
-    return {"mensaje": f"Alumno {alumno.nombre} asignado a {empresa.nombre} con éxito"}
+    return {"message": f"Alumno {alumno.nombre} asignado a {empresa.nombre} con éxito"}
 
 
 
@@ -119,6 +145,13 @@ def eliminar_asignacion(
 
     empresa = utils.empresa_existe(db, alumno.empresa_asignada_id)
     empresa.plazas_totales += 1
+    
     alumno.empresa_asignada_id = None
+    alumno.tutor_docente_id = None
+    alumno.tutor_docente_nombre = None
+    alumno.tutor_laboral_nombre = None
+    alumno.tutor_laboral_dni = None
+    alumno.tutor_laboral_contacto = None
+    
     db.commit()
-    return {"mensaje": "Asignación eliminada correctamente"}
+    return {"mensaje": "Asignación eliminada correctamente"}

@@ -1,3 +1,3 @@
-nombre,apellido,email,curso
-Ana,Sánchez,ana.sanchez@email.com,2026-1A
-Luis,Gómez,luis.gomez@email.com,2026-1A
+nombre,apellido,email,dni,telefono
+Ana,Sánchez,ana.sanchez@email.com,12345678A,600111222
+Luis,Gómez,luis.gomez@email.com,87654321B,600333444
