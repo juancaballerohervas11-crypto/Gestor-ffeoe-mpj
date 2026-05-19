@@ -2,7 +2,7 @@
 import { abrirModalPerfil } from './perfil.js';
 import { loadPlazasData, initPlazasEvents } from './plazas.js';
 
-const API_BASE_URL = 'http://localhost:8000'; // Asegúrate de que el backend esté corriendo en este puerto
+const API_BASE_URL = 'http://10.12.0.65:8000'; // Asegúrate de que el backend esté corriendo en este puerto
 
 // Variables de estado global
 let currentUserRole = null;
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnShowLogin = document.getElementById('link-show-login');
     const loginBox = document.getElementById('login-box');
     const registerBox = document.getElementById('register-box');
-    
+
     if (btnShowRegister && btnShowLogin && loginBox && registerBox) {
         btnShowRegister.addEventListener('click', (e) => {
             e.preventDefault();
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registerBox.classList.remove('hidden');
             cargarCiclosPublico();
         });
-        
+
         btnShowLogin.addEventListener('click', (e) => {
             e.preventDefault();
             registerBox.classList.add('hidden');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegisterStudent);
     }
-    
+
     // Navegación Real
     document.getElementById('nav-dashboard').addEventListener('click', (e) => {
         e.preventDefault();
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-close-empresa').addEventListener('click', () => closeModal('modal-empresa'));
     document.getElementById('btn-cancelar-empresa').addEventListener('click', () => closeModal('modal-empresa'));
     document.getElementById('form-empresa').addEventListener('submit', guardarEmpresa);
-    
+
     document.getElementById('btn-importar-empresas-csv').addEventListener('click', () => openModal('modal-importar-empresas'));
     document.getElementById('btn-close-importar-empresas').addEventListener('click', () => closeModal('modal-importar-empresas'));
     document.getElementById('btn-cancelar-importar-empresas').addEventListener('click', () => closeModal('modal-importar-empresas'));
@@ -127,12 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Configuración buttons
     document.getElementById('form-config-perfil').addEventListener('submit', guardarConfigPerfil);
-    
+
     const avatarInput = document.getElementById('config-avatar-input');
     if (avatarInput) {
         avatarInput.addEventListener('change', handleAvatarSelection);
     }
-    
+
     // Theme switching logic
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function checkSession() {
     const token = localStorage.getItem('token');
     const overlay = document.getElementById('login-overlay');
-    
+
     if (token) {
         overlay.classList.remove('active');
         loadUserProfile();
@@ -191,7 +191,7 @@ async function handleLogin(e) {
 
     errorEl.textContent = '';
     btnSubmit.disabled = true;
-    
+
     if (btnSubmit.querySelector('span')) {
         btnSubmit.querySelector('span').textContent = 'Iniciando...';
     } else {
@@ -218,7 +218,7 @@ async function handleLogin(e) {
 
         const data = await response.json();
         localStorage.setItem('token', data.access_token);
-        
+
         document.getElementById('login-overlay').classList.remove('active');
         await loadUserProfile();
         switchView('dashboard-view');
@@ -242,11 +242,11 @@ async function cargarCiclosPublico() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/v1/auth/ciclos`);
         if (!response.ok) throw new Error('Error al cargar los ciclos');
-        
+
         const ciclos = await response.json();
-        
+
         selectCiclo.innerHTML = '<option value="">Selecciona tu ciclo...</option>';
-        
+
         ciclos.forEach(c => {
             const opt = document.createElement('option');
             opt.value = c.id;
@@ -310,7 +310,7 @@ async function handleRegisterStudent(e) {
         }
 
         if (successEl) successEl.textContent = '¡Cuenta de alumno creada correctamente! Redirigiendo al login...';
-        
+
         e.target.reset();
 
         setTimeout(() => {
@@ -338,12 +338,12 @@ async function handleRegisterStudent(e) {
 function handleLogout() {
     localStorage.removeItem('token');
     document.getElementById('login-overlay').classList.add('active');
-    
+
     // Limpiar variables globales
     currentUserRole = null;
     currentUserEmail = null;
     allAlumnos = [];
-    
+
     // Limpiar perfil sidebar
     document.getElementById('user-avatar').textContent = '--';
     document.getElementById('user-name').textContent = 'Cargando...';
@@ -364,14 +364,14 @@ async function loadUserProfile() {
         if (!response.ok) throw new Error('Error al obtener perfil');
 
         const user = await response.json();
-        
+
         currentUserRole = user.role;
         currentUserEmail = user.email;
-        
+
         // Actualizar sidebar
         document.getElementById('user-name').textContent = user.full_name || user.email;
         document.getElementById('user-role').textContent = user.role.toUpperCase();
-        
+
         const avatarEl = document.getElementById('user-avatar');
         if (user.profile_pic) {
             avatarEl.innerHTML = `<img src="${user.profile_pic}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
@@ -390,7 +390,7 @@ async function loadUserProfile() {
         const navEmpresas = document.getElementById('nav-empresas').parentElement;
         const navPlazas = document.getElementById('nav-plazas').parentElement;
         const navProfesores = document.getElementById('nav-profesores').parentElement;
-        
+
         if (currentUserRole === 'alumno') {
             navCiclos.style.display = 'none';
             navEmpresas.style.display = 'none';
@@ -432,7 +432,7 @@ function switchView(viewId) {
         'config-view': 'nav-config'
     };
 
-    
+
     const activeNavId = navMapping[viewId];
     const navItems = document.querySelectorAll('.sidebar-nav li');
     navItems.forEach(item => {
@@ -503,14 +503,14 @@ async function loadDashboardData() {
     }
 
     showLoadingState();
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/stats/resumen`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-        
+
         if (response.status === 401 || response.status === 403) {
             handleLogout();
             return;
@@ -531,14 +531,14 @@ async function loadDashboardData() {
 
 function showLoadingState() {
     const ids = [
-        'stat-alumnos-totales', 
-        'stat-alumnos-asignados', 
-        'stat-alumnos-pendientes', 
+        'stat-alumnos-totales',
+        'stat-alumnos-asignados',
+        'stat-alumnos-pendientes',
         'stat-plazas-disponibles',
         'stat-empresas-totales',
         'stat-profesores-totales'
     ];
-    
+
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -567,7 +567,7 @@ function updateDashboardUI(data) {
 
     const tbody = document.getElementById('empresas-tbody');
     const badge = document.getElementById('badge-ofertas-count');
-    
+
     const ofertas = data.empresas.listado_ofertas || [];
     badge.textContent = `${ofertas.length} empresas`;
 
@@ -587,7 +587,7 @@ function updateDashboardUI(data) {
         const tr = document.createElement('tr');
         tr.className = 'fade-in';
         tr.style.animationDelay = `${index * 0.1}s`;
-        
+
         tr.innerHTML = `
             <td>
                 <div class="company-name">${oferta.nombre}</div>
@@ -699,7 +699,7 @@ function abrirModalCiclo(id = null, nombre = '', inicio = '', fin = '') {
     const errorEl = document.getElementById('ciclo-form-error');
 
     errorEl.textContent = '';
-    
+
     if (id) {
         titleEl.textContent = 'Modificar Ciclo Académico';
         idEl.value = id;
@@ -885,7 +885,7 @@ async function abrirGestionarAlumnos(cicloId) {
 
     document.getElementById('gest-alumnos-ciclo-id').value = cicloId;
     document.getElementById('asig-alumno-error').textContent = '';
-    
+
     openModal('modal-gestionar-alumnos');
     loadCicloAlumnos(cicloId);
 }
@@ -989,7 +989,7 @@ async function guardarAsignarAlumno() {
 
 async function desvincularAlumno(cicloId, alumnoId) {
     if (!confirm('¿Estás seguro de que deseas retirar a este alumno de este ciclo formativo?')) return;
-    
+
     const token = localStorage.getItem('token');
     if (!token) return;
 
@@ -1067,7 +1067,7 @@ async function loadAlumnosGestorList() {
 
         if (!response.ok) throw new Error('Error al listar alumnos');
         allAlumnos = await response.json();
-        
+
         // Calcular estadísticas
         const total = allAlumnos.length;
         const asignados = allAlumnos.filter(a => a.empresa_asignada_id).length;
@@ -1110,7 +1110,7 @@ function renderAlumnosTabla(alumnos) {
         tr.style.animationDelay = `${index * 0.05}s`;
 
         const cicloNombre = alum.ciclo_id ? (cicloMapGlobal[alum.ciclo_id] || `Ciclo #${alum.ciclo_id}`) : 'Sin matricular';
-        
+
         let cvButton = '<span style="color: var(--text-muted); font-size: 0.85rem;">No subido</span>';
         if (alum.cv_path) {
             cvButton = `<button class="btn-text-accent" onclick="descargarCVAlumno(${alum.id}, '${alum.nombre} ${alum.apellido}')" title="Descargar CV">📄 Descargar CV</button>`;
@@ -1149,10 +1149,10 @@ function filtrarAlumnosTabla() {
         const telefono = (a.telefono || '').toLowerCase();
         const ciclo = a.ciclo_id ? (cicloMapGlobal[a.ciclo_id] || '').toLowerCase() : 'sin matricular';
 
-        return nombreCompleto.includes(q) || 
-               email.includes(q) || 
-               telefono.includes(q) || 
-               ciclo.includes(q);
+        return nombreCompleto.includes(q) ||
+            email.includes(q) ||
+            telefono.includes(q) ||
+            ciclo.includes(q);
     });
 
     renderAlumnosTabla(filtrados);
@@ -1285,7 +1285,7 @@ async function importarAlumnosCSV(e) {
 
         const data = await response.json();
         successEl.textContent = `✅ Importación completada. Alumnos nuevos: ${data.nuevos_alumnos}. Saltados: ${data.saltados}.`;
-        
+
         setTimeout(() => {
             closeModal('modal-importar-csv');
             loadAlumnosGestorList();
@@ -1446,7 +1446,7 @@ async function guardarMiPerfil(e) {
         }
 
         successEl.textContent = '¡Datos actualizados con éxito!';
-        
+
         // Recargar perfil del sidebar si cambiaron credenciales
         await loadUserProfile();
         setTimeout(() => { loadMiPerfilData(); }, 1500);
@@ -1624,9 +1624,9 @@ async function loadEmpresasData() {
 function renderEmpresasTabla(empresas) {
     const tbody = document.getElementById('empresas-listado-tbody');
     const countEl = document.getElementById('badge-empresas-count');
-    
+
     if (countEl) countEl.textContent = `${empresas.length} empresas`;
-    
+
     if (empresas.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--text-secondary); padding: 30px;">No se encontraron empresas registradas</td></tr>`;
         return;
@@ -1661,8 +1661,8 @@ function renderEmpresasTabla(empresas) {
 
 function filtrarEmpresasTabla() {
     const query = document.getElementById('empresas-buscar').value.toLowerCase();
-    const filtrados = allEmpresas.filter(e => 
-        e.nombre.toLowerCase().includes(query) || 
+    const filtrados = allEmpresas.filter(e =>
+        e.nombre.toLowerCase().includes(query) ||
         e.cif.toLowerCase().includes(query) ||
         (e.contacto && e.contacto.toLowerCase().includes(query))
     );
@@ -1805,7 +1805,7 @@ async function abrirBitacoraEmpresa(empresaId, nombre) {
     document.getElementById('bitacora-observaciones').value = '';
     document.getElementById('bitacora-plazas').value = '0';
     document.getElementById('bitacora-form-error').textContent = '';
-    
+
     await cargarBitacoraHistorial(empresaId);
     openModal('modal-bitacora');
 }
@@ -1833,7 +1833,7 @@ async function cargarBitacoraHistorial(empresaId) {
         logs.forEach(log => {
             const date = new Date(log.fecha_contacto).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
             const tr = document.createElement('tr');
-            
+
             let badgeColor = 'var(--text-secondary)';
             if (log.estado === 'Acepta') badgeColor = 'var(--accent-green)';
             if (log.estado === 'Rechaza') badgeColor = '#F87171';
@@ -1889,7 +1889,7 @@ async function guardarBitacora(e) {
 
         document.getElementById('bitacora-observaciones').value = '';
         document.getElementById('bitacora-plazas').value = '0';
-        
+
         await cargarBitacoraHistorial(empresaId);
         loadDashboardData();
     } catch (error) {
@@ -1932,9 +1932,9 @@ async function loadProfesoresData() {
 function renderProfesoresTabla(profesores) {
     const tbody = document.getElementById('profesores-listado-tbody');
     const countEl = document.getElementById('badge-profesores-count');
-    
+
     if (countEl) countEl.textContent = `${profesores.length} profesores`;
-    
+
     if (profesores.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center" style="color: var(--text-secondary); padding: 30px;">No se encontraron docentes registrados</td></tr>`;
         return;
@@ -1945,9 +1945,9 @@ function renderProfesoresTabla(profesores) {
         const tr = document.createElement('tr');
         tr.className = 'fade-in';
         tr.style.animationDelay = `${index * 0.05}s`;
-        
+
         const isSelf = profesor.email === currentUserEmail;
-        
+
         tr.innerHTML = `
             <td>
                 <strong style="color: var(--text-primary); font-size: 0.95rem;">${profesor.full_name || 'Profesor'}</strong>
@@ -1976,8 +1976,8 @@ function renderProfesoresTabla(profesores) {
 
 function filtrarProfesoresTabla() {
     const query = document.getElementById('profesores-buscar').value.toLowerCase();
-    const filtrados = allProfesores.filter(p => 
-        (p.full_name && p.full_name.toLowerCase().includes(query)) || 
+    const filtrados = allProfesores.filter(p =>
+        (p.full_name && p.full_name.toLowerCase().includes(query)) ||
         p.email.toLowerCase().includes(query) ||
         p.role.toLowerCase().includes(query)
     );
@@ -1990,17 +1990,17 @@ function abrirModalProfesor(id = '', nombre = '', email = '', rol = 'profesor') 
     document.getElementById('profesor-email').value = email;
     document.getElementById('profesor-rol').value = rol;
     document.getElementById('profesor-password').value = '';
-    
+
     document.getElementById('profesor-form-error').textContent = '';
     document.getElementById('modal-profesor-title').textContent = id ? 'Editar Profesor / Tutor' : 'Nuevo Profesor / Tutor';
-    
+
     const passGroup = document.getElementById('profesor-password-group');
     if (id) {
         passGroup.querySelector('label').textContent = 'Nueva Contraseña (Opcional)';
     } else {
         passGroup.querySelector('label').textContent = 'Contraseña';
     }
-    
+
     openModal('modal-profesor');
 }
 
@@ -2030,7 +2030,7 @@ async function guardarProfesor(e) {
         full_name: nombre,
         email: email
     };
-    
+
     if (password) bodyData.password = password;
     if (!id) bodyData.role = rol;
 
@@ -2100,7 +2100,7 @@ function cropAndResizeImage(file, targetWidth = 500, targetHeight = 500) {
 
                 const sourceAspect = img.width / img.height;
                 const targetAspect = targetWidth / targetHeight;
-                
+
                 let sourceX = 0;
                 let sourceY = 0;
                 let sourceWidth = img.width;
@@ -2173,7 +2173,7 @@ async function loadConfigData() {
         });
         if (!response.ok) throw new Error('No se pudo obtener información de la cuenta');
         const user = await response.json();
-        
+
         currentUserId = user.id;
         document.getElementById('config-email').value = user.email;
         document.getElementById('config-nombre').value = user.full_name || '';
