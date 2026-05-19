@@ -26,21 +26,32 @@ Representa a los estudiantes que realizan prácticas FCT/Dual.
 | `nombre`              | VARCHAR      | Nombre del alumno.                                |
 | `apellido`            | VARCHAR      | Apellido del alumno.                              |
 | `email`               | VARCHAR      | Correo electrónico del alumno (único).            |
+| `dni`                 | VARCHAR      | DNI del alumno (opcional).                        |
+| `telefono`            | VARCHAR      | Teléfono de contacto del alumno.                  |
+| `ciclo_id`            | INT (FK)     | ID del ciclo formativo en el que está matriculado.|
+| `empresa_asignada_id` | INT (FK)     | ID de la empresa a la que está asignado.          |
+| `cv_path`             | VARCHAR      | Ruta interna al archivo PDF del currículum.       |
 | `registrado_por`      | INT (FK)     | ID del usuario que registró al alumno.            |
-| `empresa_asignada_id` | INT (FK)     | ID de la empresa a la que está asignado el alumno. |
 
 ### Tabla: `empresas`
 
 Representa a las empresas colaboradoras que ofrecen prácticas.
 
-| Campo            | Tipo de Dato | Descripción                                       |
-| :--------------- | :----------- | :------------------------------------------------ |
-| `id`             | INT (PK)     | Identificador único de la empresa.                |
-| `nombre`         | VARCHAR      | Nombre de la empresa.                             |
-| `cif`            | VARCHAR      | CIF de la empresa (único).                        |
-| `contacto`       | VARCHAR      | Nombre de la persona de contacto en la empresa.   |
-| `plazas_totales` | INT          | Número total de plazas de prácticas ofrecidas.    |
-| `registrado_por` | INT (FK)     | ID del usuario que registró la empresa.           |
+| Campo                 | Tipo de Dato | Descripción                                           |
+| :-------------------- | :----------- | :---------------------------------------------------- |
+| `id`                  | INT (PK)     | Identificador único de la empresa.                    |
+| `nombre`              | VARCHAR      | Nombre de la empresa.                                 |
+| `cif`                 | VARCHAR      | CIF de la empresa (único).                            |
+| `direccion`           | VARCHAR      | Dirección postal de la empresa.                       |
+| `web`                 | VARCHAR      | URL del sitio web de la empresa.                      |
+| `email`               | VARCHAR      | Correo electrónico general de la empresa.             |
+| `telefono`            | VARCHAR      | Teléfono general de la empresa.                       |
+| `plazas_totales`      | INT          | Número total de plazas de prácticas ofrecidas.        |
+| `contacto_nombre`     | VARCHAR      | Nombre de la persona de contacto interna.             |
+| `contacto_email`      | VARCHAR      | Email de la persona de contacto interna.              |
+| `contacto_telefono`   | VARCHAR      | Teléfono de la persona de contacto interna.           |
+| `contacto_dni`        | VARCHAR      | DNI de la persona de contacto interna.                |
+| `registrado_por`      | INT (FK)     | ID del usuario que registró la empresa.               |
 
 ### Tabla: `contactos_empresa`
 

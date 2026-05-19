@@ -23,11 +23,11 @@ def crear_ciclo(
     """
     Crea un nuevo ciclo. Solo para Administrador / Coordinador.
     """
-    nuevo_ciclo = models.Ciclo(**ciclo.model_dump())
-    db.add(nuevo_ciclo)
+    new_cycle = models.Ciclo(**ciclo.model_dump())
+    db.add(new_cycle)
     db.commit()
-    db.refresh(nuevo_ciclo)
-    return nuevo_ciclo
+    db.refresh(new_cycle)
+    return new_cycle
 
 
 @router.get("/", response_model=List[schemas.CicloOut])
@@ -38,8 +38,8 @@ def listar_ciclos(
     """
     Lista todos los ciclos disponibles.
     """
-    ciclos = db.query(models.Ciclo).all()
-    return ciclos
+    all_cycles = db.query(models.Ciclo).all()
+    return all_cycles
 
 
 @router.post("/{ciclo_id}/asignar_profesor", status_code=status.HTTP_200_OK)
@@ -74,7 +74,7 @@ def asignar_profesor_a_ciclo(
     ciclo.profesores.append(profesor)
     db.commit()
     
-    return {"mensaje": f"Profesor {profesor.email} asignado correctamente al ciclo {ciclo.nombre}"}
+    return {"message": f"Profesor {profesor.email} asignado correctamente al ciclo {ciclo.nombre}"}
 
 
 @router.put("/{ciclo_id}", response_model=schemas.CicloOut)
@@ -89,15 +89,15 @@ def modificar_ciclo(
     Solo para Administrador / Coordinador.
     """
     from .. import utils
-    ciclo_db = utils.ciclo_existe(db, ciclo_id)
-    
-    datos_dict = datos.model_dump(exclude_unset=True)
-    for key, value in datos_dict.items():
-        setattr(ciclo_db, key, value)
-        
+    cycle_record = utils.ciclo_existe(db, ciclo_id)
+
+    update_data = datos.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(cycle_record, key, value)
+
     db.commit()
-    db.refresh(ciclo_db)
-    return ciclo_db
+    db.refresh(cycle_record)
+    return cycle_record
 
 
 @router.delete("/{ciclo_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -111,14 +111,14 @@ def eliminar_ciclo(
     Solo para Administrador / Coordinador.
     """
     from .. import utils
-    ciclo_db = utils.ciclo_existe(db, ciclo_id)
-    
+    cycle_record = utils.ciclo_existe(db, ciclo_id)
+
     # Desasignar alumnos de este ciclo antes de borrarlo (para evitar errores de clave foránea)
     db.query(models.Alumno).filter(models.Alumno.ciclo_id == ciclo_id).update(
         {models.Alumno.ciclo_id: None}
     )
-    
-    db.delete(ciclo_db)
+
+    db.delete(cycle_record)
     db.commit()
     return None
 
@@ -148,7 +148,7 @@ def asignar_alumno_a_ciclo(
     alumno.ciclo_id = ciclo.id
     db.commit()
     
-    return {"mensaje": f"Alumno {alumno.nombre} {alumno.apellido} asignado correctamente al ciclo {ciclo.nombre}"}
+    return {"message": f"Alumno {alumno.nombre} {alumno.apellido} asignado correctamente al ciclo {ciclo.nombre}"}
 
 
 @router.delete("/{ciclo_id}/desasignar_alumno/{alumno_id}", status_code=status.HTTP_200_OK)

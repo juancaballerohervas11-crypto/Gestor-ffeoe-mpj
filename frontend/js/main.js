@@ -1,4 +1,6 @@
 // js/main.js
+import { abrirModalPerfil } from './perfil.js';
+import { loadPlazasData, initPlazasEvents } from './plazas.js';
 
 const API_BASE_URL = 'http://localhost:8000'; // Asegúrate de que el backend esté corriendo en este puerto
 
@@ -16,6 +18,32 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-refresh').addEventListener('click', loadDashboardData);
     document.getElementById('login-form').addEventListener('submit', handleLogin);
     document.getElementById('btn-logout').addEventListener('click', handleLogout);
+
+    // Registro de Alumnos Toggles
+    const btnShowRegister = document.getElementById('link-show-register');
+    const btnShowLogin = document.getElementById('link-show-login');
+    const loginBox = document.getElementById('login-box');
+    const registerBox = document.getElementById('register-box');
+    
+    if (btnShowRegister && btnShowLogin && loginBox && registerBox) {
+        btnShowRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginBox.classList.add('hidden');
+            registerBox.classList.remove('hidden');
+            cargarCiclosPublico();
+        });
+        
+        btnShowLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerBox.classList.add('hidden');
+            loginBox.classList.remove('hidden');
+        });
+    }
+
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', handleRegisterStudent);
+    }
     
     // Navegación Real
     document.getElementById('nav-dashboard').addEventListener('click', (e) => {
@@ -34,6 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         switchView('empresas-view');
     });
+    document.getElementById('nav-plazas').addEventListener('click', (e) => {
+        e.preventDefault();
+        switchView('plazas-view');
+    });
     document.getElementById('nav-profesores').addEventListener('click', (e) => {
         e.preventDefault();
         switchView('profesores-view');
@@ -42,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         switchView('config-view');
     });
+
 
     // Ciclos buttons
     document.getElementById('btn-nuevo-ciclo').addEventListener('click', () => abrirModalCiclo());
@@ -95,6 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Configuración buttons
     document.getElementById('form-config-perfil').addEventListener('submit', guardarConfigPerfil);
     
+    const avatarInput = document.getElementById('config-avatar-input');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', handleAvatarSelection);
+    }
+    
     // Theme switching logic
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -113,7 +151,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Alumno (Self Profile) buttons
     document.getElementById('form-alumno-perfil-self').addEventListener('submit', guardarMiPerfil);
     document.getElementById('form-alumno-cv').addEventListener('submit', subirMiCV);
+
+    // Modal de perfil de usuario (sidebar)
+    document.getElementById('user-profile-btn').addEventListener('click', abrirModalPerfil);
+    document.getElementById('btn-close-perfil-modal').addEventListener('click', () => closeModal('modal-perfil-usuario'));
+    document.getElementById('pm-btn-config').addEventListener('click', () => {
+        closeModal('modal-perfil-usuario');
+        switchView('config-view');
+    });
+    document.getElementById('pm-btn-logout').addEventListener('click', () => {
+        closeModal('modal-perfil-usuario');
+        handleLogout();
+    });
+
+    // Inicializar eventos de Plazas FCT
+    initPlazasEvents();
 });
+
 
 function checkSession() {
     const token = localStorage.getItem('token');
@@ -137,7 +191,12 @@ async function handleLogin(e) {
 
     errorEl.textContent = '';
     btnSubmit.disabled = true;
-    btnSubmit.querySelector('span').textContent = 'Iniciando...';
+    
+    if (btnSubmit.querySelector('span')) {
+        btnSubmit.querySelector('span').textContent = 'Iniciando...';
+    } else {
+        btnSubmit.textContent = 'Iniciando...';
+    }
 
     try {
         const formData = new URLSearchParams();
@@ -168,7 +227,111 @@ async function handleLogin(e) {
         errorEl.textContent = error.message;
     } finally {
         btnSubmit.disabled = false;
-        btnSubmit.querySelector('span').textContent = 'Entrar';
+        if (btnSubmit.querySelector('span')) {
+            btnSubmit.querySelector('span').textContent = 'Entrar';
+        } else {
+            btnSubmit.textContent = 'Entrar';
+        }
+    }
+}
+
+async function cargarCiclosPublico() {
+    const selectCiclo = document.getElementById('register-ciclo');
+    if (!selectCiclo) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/auth/ciclos`);
+        if (!response.ok) throw new Error('Error al cargar los ciclos');
+        
+        const ciclos = await response.json();
+        
+        selectCiclo.innerHTML = '<option value="">Selecciona tu ciclo...</option>';
+        
+        ciclos.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = `${c.nombre} (${c.ano_inicio}-${c.ano_fin})`;
+            selectCiclo.appendChild(opt);
+        });
+    } catch (err) {
+        console.error('No se pudieron cargar los ciclos de autoregistro:', err);
+    }
+}
+
+async function handleRegisterStudent(e) {
+    e.preventDefault();
+    const nombre = document.getElementById('register-nombre').value;
+    const apellido = document.getElementById('register-apellido').value;
+    const email = document.getElementById('register-email').value;
+    const dni = document.getElementById('register-dni').value;
+    const telefono = document.getElementById('register-telefono').value;
+    const cicloId = document.getElementById('register-ciclo').value;
+    const password = document.getElementById('register-password').value;
+
+    const errorEl = document.getElementById('register-error');
+    const successEl = document.getElementById('register-success');
+    const btnSubmit = document.getElementById('btn-register-submit');
+
+    if (errorEl) errorEl.textContent = '';
+    if (successEl) successEl.textContent = '';
+
+    if (password.length < 6) {
+        if (errorEl) errorEl.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+        return;
+    }
+
+    if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Registrando...';
+    }
+
+    const payload = {
+        nombre,
+        apellido,
+        email,
+        password,
+        dni: dni || null,
+        telefono: telefono || null,
+        ciclo_id: cicloId ? parseInt(cicloId) : null
+    };
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/auth/registrar-alumno`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({ detail: 'Error al registrar el alumno' }));
+            throw new Error(errData.detail || 'Error al completar el registro');
+        }
+
+        if (successEl) successEl.textContent = '¡Cuenta de alumno creada correctamente! Redirigiendo al login...';
+        
+        e.target.reset();
+
+        setTimeout(() => {
+            const loginBox = document.getElementById('login-box');
+            const registerBox = document.getElementById('register-box');
+            if (loginBox && registerBox) {
+                registerBox.classList.add('hidden');
+                loginBox.classList.remove('hidden');
+                document.getElementById('login-email').value = email;
+                document.getElementById('login-password').value = '';
+            }
+            if (successEl) successEl.textContent = '';
+        }, 2000);
+
+    } catch (error) {
+        if (errorEl) errorEl.textContent = error.message;
+    } finally {
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Crear Cuenta';
+        }
     }
 }
 
@@ -209,26 +372,34 @@ async function loadUserProfile() {
         document.getElementById('user-name').textContent = user.full_name || user.email;
         document.getElementById('user-role').textContent = user.role.toUpperCase();
         
-        const initials = (user.full_name || 'U')
-            .split(' ')
-            .map(n => n[0])
-            .slice(0, 2)
-            .join('')
-            .toUpperCase();
-        document.getElementById('user-avatar').textContent = initials;
+        const avatarEl = document.getElementById('user-avatar');
+        if (user.profile_pic) {
+            avatarEl.innerHTML = `<img src="${user.profile_pic}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        } else {
+            const initials = (user.full_name || 'U')
+                .split(' ')
+                .map(n => n[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase();
+            avatarEl.textContent = initials;
+        }
 
         // Ocultar tabs si el usuario es alumno
         const navCiclos = document.getElementById('nav-ciclos').parentElement;
         const navEmpresas = document.getElementById('nav-empresas').parentElement;
+        const navPlazas = document.getElementById('nav-plazas').parentElement;
         const navProfesores = document.getElementById('nav-profesores').parentElement;
         
         if (currentUserRole === 'alumno') {
             navCiclos.style.display = 'none';
             navEmpresas.style.display = 'none';
+            navPlazas.style.display = 'none';
             navProfesores.style.display = 'none';
         } else {
             navCiclos.style.display = 'block';
             navEmpresas.style.display = 'block';
+            navPlazas.style.display = 'block';
             navProfesores.style.display = 'block';
         }
 
@@ -239,7 +410,7 @@ async function loadUserProfile() {
 }
 
 function switchView(viewId) {
-    const views = ['dashboard-view', 'ciclos-view', 'alumnos-view', 'empresas-view', 'profesores-view', 'config-view'];
+    const views = ['dashboard-view', 'ciclos-view', 'alumnos-view', 'empresas-view', 'plazas-view', 'profesores-view', 'config-view'];
     views.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -256,9 +427,11 @@ function switchView(viewId) {
         'ciclos-view': 'nav-ciclos',
         'alumnos-view': 'nav-alumnos',
         'empresas-view': 'nav-empresas',
+        'plazas-view': 'nav-plazas',
         'profesores-view': 'nav-profesores',
         'config-view': 'nav-config'
     };
+
     
     const activeNavId = navMapping[viewId];
     const navItems = document.querySelectorAll('.sidebar-nav li');
@@ -271,6 +444,31 @@ function switchView(viewId) {
         }
     });
 
+    // Actualizar título del header dinámicamente
+    const headerTitles = {
+        'dashboard-view': { title: 'Resumen General', subtitle: 'Estado actual de asignaciones y plazas' },
+        'ciclos-view': { title: 'Gestión de Ciclos', subtitle: 'Administración de ciclos formativos y asignaciones' },
+        'alumnos-view': { title: currentUserRole === 'alumno' ? 'Mi Perfil de Alumno' : 'Gestión de Alumnado', subtitle: currentUserRole === 'alumno' ? 'Consulta tu estado de asignación y tus datos' : 'Directorio general de estudiantes y carga de CVs' },
+        'empresas-view': { title: 'Empresas Colaboradoras', subtitle: 'Convenios FCT/Dual, bitácora de llamadas y plazas' },
+        'plazas-view': { title: 'Gestión de Plazas FCT', subtitle: 'Asigna alumnos a las plazas vacantes de empresas arrastrándolos y configurando sus tutores.' },
+        'profesores-view': { title: 'Directorio de Profesores', subtitle: 'Personal docente, tutores de ciclo y accesos' },
+        'config-view': { title: 'Configuración', subtitle: 'Ajustes de perfil y personalización de la cuenta' }
+    };
+
+    const headerInfo = headerTitles[viewId];
+    if (headerInfo) {
+        const titleEl = document.querySelector('.header-title h2');
+        const subtitleEl = document.querySelector('.header-title .subtitle');
+        if (titleEl) titleEl.textContent = headerInfo.title;
+        if (subtitleEl) subtitleEl.textContent = headerInfo.subtitle;
+    }
+
+    // Mostrar/ocultar botón refresh solo en dashboard
+    const refreshBtn = document.getElementById('btn-refresh');
+    if (refreshBtn) {
+        refreshBtn.style.display = viewId === 'dashboard-view' ? '' : 'none';
+    }
+
     if (viewId === 'dashboard-view') {
         loadDashboardData();
     } else if (viewId === 'ciclos-view') {
@@ -279,12 +477,15 @@ function switchView(viewId) {
         loadAlumnosData();
     } else if (viewId === 'empresas-view') {
         loadEmpresasData();
+    } else if (viewId === 'plazas-view') {
+        loadPlazasData();
     } else if (viewId === 'profesores-view') {
         loadProfesoresData();
     } else if (viewId === 'config-view') {
         loadConfigData();
     }
 }
+
 
 function openModal(id) {
     document.getElementById(id).classList.add('active');
@@ -461,17 +662,17 @@ async function loadCiclosData() {
                 <td>${ciclo.ano_inicio} - ${ciclo.ano_fin}</td>
                 <td>
                     <button class="btn-text-accent" onclick="abrirGestionarAlumnos(${ciclo.id})">
-                        👨‍🎓 ${ciclo.alumnos ? ciclo.alumnos.length : 0} alumnos
+                        <span class="material-symbols-outlined icon" style="font-size:1.05rem; vertical-align:middle; margin-right:4px;">school</span>${ciclo.alumnos ? ciclo.alumnos.length : 0} alumnos
                     </button>
                 </td>
                 <td>
                     <button class="btn-text" onclick="abrirAsignarProfesor(${ciclo.id})">
-                        👤 ${profNames}
+                        <span class="material-symbols-outlined icon" style="font-size:1.05rem; vertical-align:middle; margin-right:4px;">co_present</span>${profNames}
                     </button>
                 </td>
                 <td>
-                    <button class="btn-text" onclick="abrirModalCiclo(${ciclo.id}, '${ciclo.nombre}', ${ciclo.ano_inicio}, ${ciclo.ano_fin})" style="margin-right: 8px;">✏️ Editar</button>
-                    <button class="btn-text-delete" onclick="eliminarCiclo(${ciclo.id})">🗑️ Borrar</button>
+                    <button class="btn-text" onclick="abrirModalCiclo(${ciclo.id}, '${ciclo.nombre}', ${ciclo.ano_inicio}, ${ciclo.ano_fin})" style="margin-right: 8px; display: inline-flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined icon" style="font-size:1rem;">edit</span> Editar</button>
+                    <button class="btn-text-delete" onclick="eliminarCiclo(${ciclo.id})" style="display: inline-flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined icon" style="font-size:1rem;">delete</span> Borrar</button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -912,30 +1113,23 @@ function renderAlumnosTabla(alumnos) {
         
         let cvButton = '<span style="color: var(--text-muted); font-size: 0.85rem;">No subido</span>';
         if (alum.cv_path) {
-            cvButton = `
-                <button class="btn-text-accent" onclick="descargarCVAlumno(${alum.id}, '${alum.nombre} ${alum.apellido}')" title="Descargar currículum en PDF">
-                    📄 Descargar CV
-                </button>
-            `;
+            cvButton = `<button class="btn-text-accent" onclick="descargarCVAlumno(${alum.id}, '${alum.nombre} ${alum.apellido}')" title="Descargar CV">📄 Descargar CV</button>`;
         }
 
         tr.innerHTML = `
             <td>
                 <strong class="company-name">${alum.nombre} ${alum.apellido}</strong>
+                ${alum.dni ? `<div style="font-size:0.78rem; color:var(--text-muted);">DNI: <code>${alum.dni}</code></div>` : ''}
             </td>
             <td>
                 <div style="font-size: 0.9rem;">${alum.email}</div>
                 <div style="font-size: 0.8rem; color: var(--text-secondary);">${alum.telefono || 'Sin teléfono'}</div>
             </td>
-            <td>
-                <span class="badge" style="background: rgba(255,255,255,0.03); color: var(--text-primary); border-color: var(--border-glass);">
-                    ${cicloNombre}
-                </span>
-            </td>
+            <td><span class="badge">${cicloNombre}</span></td>
             <td>${cvButton}</td>
-            <td>
-                <button class="btn-text" onclick="abrirModalAlumno(${alum.id}, '${alum.nombre}', '${alum.apellido}', '${alum.email}', '${alum.telefono || ''}')" style="margin-right: 8px;">✏️ Editar</button>
-                <button class="btn-text-delete" onclick="eliminarAlumno(${alum.id})">🗑️ Borrar</button>
+            <td class="table-actions">
+                <button class="btn btn-secondary btn-table" onclick="abrirModalAlumno(${alum.id}, '${alum.nombre}', '${alum.apellido}', '${alum.email}', '${alum.telefono || ''}', '${alum.dni || ''}')" style="display: inline-flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined icon" style="font-size:0.95rem;">edit</span> Editar</button>
+                <button class="btn btn-secondary btn-table btn-table-danger" onclick="eliminarAlumno(${alum.id})" style="display: inline-flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined icon" style="font-size:0.95rem;">delete</span> Borrar</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -964,33 +1158,15 @@ function filtrarAlumnosTabla() {
     renderAlumnosTabla(filtrados);
 }
 
-function abrirModalAlumno(id = null, nombre = '', apellido = '', email = '', telefono = '') {
-    const titleEl = document.getElementById('modal-alumno-title');
-    const idEl = document.getElementById('alumno-id');
-    const nombreEl = document.getElementById('alumno-nombre');
-    const apellidoEl = document.getElementById('alumno-apellido');
-    const emailEl = document.getElementById('alumno-email');
-    const telefonoEl = document.getElementById('alumno-telefono');
-    const errorEl = document.getElementById('alumno-form-error');
-
-    errorEl.textContent = '';
-    
-    if (id) {
-        titleEl.textContent = 'Modificar Ficha de Alumno';
-        idEl.value = id;
-        nombreEl.value = nombre;
-        apellidoEl.value = apellido;
-        emailEl.value = email;
-        telefonoEl.value = telefono;
-    } else {
-        titleEl.textContent = 'Nuevo Estudiante';
-        idEl.value = '';
-        nombreEl.value = '';
-        apellidoEl.value = '';
-        emailEl.value = '';
-        telefonoEl.value = '';
-    }
-
+function abrirModalAlumno(id = null, nombre = '', apellido = '', email = '', telefono = '', dni = '') {
+    document.getElementById('modal-alumno-title').textContent = id ? 'Modificar Ficha de Alumno' : 'Nuevo Estudiante';
+    document.getElementById('alumno-id').value = id || '';
+    document.getElementById('alumno-nombre').value = nombre;
+    document.getElementById('alumno-apellido').value = apellido;
+    document.getElementById('alumno-email').value = email;
+    document.getElementById('alumno-telefono').value = telefono;
+    document.getElementById('alumno-dni').value = dni;
+    document.getElementById('alumno-form-error').textContent = '';
     openModal('modal-alumno');
 }
 
@@ -1000,10 +1176,6 @@ async function guardarAlumno(e) {
     if (!token) return;
 
     const id = document.getElementById('alumno-id').value;
-    const nombre = document.getElementById('alumno-nombre').value;
-    const apellido = document.getElementById('alumno-apellido').value;
-    const email = document.getElementById('alumno-email').value;
-    const telefono = document.getElementById('alumno-telefono').value;
     const errorEl = document.getElementById('alumno-form-error');
     const btnGuardar = document.getElementById('btn-guardar-alumno');
 
@@ -1013,19 +1185,19 @@ async function guardarAlumno(e) {
     const url = id ? `${API_BASE_URL}/api/v1/alumnos/${id}` : `${API_BASE_URL}/api/v1/alumnos/`;
     const method = id ? 'PUT' : 'POST';
 
+    const body = {
+        nombre: document.getElementById('alumno-nombre').value,
+        apellido: document.getElementById('alumno-apellido').value,
+        email: document.getElementById('alumno-email').value,
+        telefono: document.getElementById('alumno-telefono').value,
+        dni: document.getElementById('alumno-dni').value || null
+    };
+
     try {
         const response = await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                nombre: nombre,
-                apellido: apellido,
-                email: email,
-                telefono: telefono
-            })
+            method,
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(body)
         });
 
         if (!response.ok) {
@@ -1035,7 +1207,6 @@ async function guardarAlumno(e) {
 
         closeModal('modal-alumno');
         loadAlumnosGestorList();
-
     } catch (error) {
         errorEl.textContent = error.message;
     } finally {
@@ -1197,12 +1368,23 @@ async function loadMiPerfilData() {
         document.getElementById('alumno-self-ciclo').textContent = cicloNombre;
 
         const estadoEl = document.getElementById('alumno-self-estado');
+        const tutorCard = document.getElementById('alumno-self-tutor-card');
         if (alum.empresa_asignada_id) {
             estadoEl.textContent = 'ASIGNADO';
             estadoEl.style.color = 'var(--accent-green)';
+            if (tutorCard) {
+                tutorCard.classList.remove('hidden');
+                document.getElementById('alumno-self-empresa-nombre').textContent = alum.empresa_nombre || 'Asignado (Cargando...)';
+                document.getElementById('alumno-self-tutor-laboral').textContent = alum.tutor_laboral_nombre || 'Pendiente de Asignar';
+                document.getElementById('alumno-self-tutor-dni').textContent = alum.tutor_laboral_dni || 'No disponible';
+                document.getElementById('alumno-self-tutor-contacto').textContent = alum.tutor_laboral_contacto || 'No disponible';
+            }
         } else {
             estadoEl.textContent = 'PENDIENTE DE ASIGNACIÓN';
             estadoEl.style.color = 'var(--accent-orange)';
+            if (tutorCard) {
+                tutorCard.classList.add('hidden');
+            }
         }
 
         // Rellenar estado del CV
@@ -1455,28 +1637,22 @@ function renderEmpresasTabla(empresas) {
         const tr = document.createElement('tr');
         tr.className = 'fade-in';
         tr.style.animationDelay = `${index * 0.05}s`;
-        
+
+        const contactoInfo = empresa.contacto_nombre
+            ? `<div style="font-weight:600; color:var(--text-primary); font-size: 0.88rem;">${empresa.contacto_nombre}</div>
+               ${empresa.contacto_dni ? `<div style="font-size:0.78rem; color:var(--text-secondary); margin-top: 2px;">DNI: <span style="font-family:monospace;">${empresa.contacto_dni}</span></div>` : ''}
+               ${(empresa.contacto_email || empresa.contacto_telefono) ? `<div style="font-size:0.78rem; color:var(--text-secondary); margin-top: 2px;">${[empresa.contacto_email, empresa.contacto_telefono].filter(Boolean).join(' • ')}</div>` : ''}`
+            : '<span style="color:var(--text-muted);font-size:0.82rem;">Sin tutor laboral</span>';
+
         tr.innerHTML = `
-            <td><strong style="color: var(--text-primary); font-size: 0.95rem;">${empresa.nombre}</strong></td>
+            <td><strong>${empresa.nombre}</strong></td>
             <td><code>${empresa.cif}</code></td>
-            <td><span style="color: var(--text-secondary);">${empresa.contacto || 'Sin contacto'}</span></td>
-            <td>
-                <span class="plazas-badge" style="background: rgba(16,185,129,0.15); color: var(--accent-green); padding: 4px 10px; border-radius: var(--radius-sm); font-weight:600; font-size:0.85rem;">
-                    ${empresa.plazas_totales} plazas
-                </span>
-            </td>
-            <td>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary" onclick="abrirBitacoraEmpresa(${empresa.id}, '${empresa.nombre}')" style="padding: 6px 12px; font-size: 0.8rem; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60A5FA;">
-                        📞 Bitácora
-                    </button>
-                    <button class="btn btn-secondary" onclick="abrirModalEmpresa(${empresa.id}, '${empresa.nombre}', '${empresa.cif}', '${empresa.contacto || ''}', ${empresa.plazas_totales})" style="padding: 6px 12px; font-size: 0.8rem;">
-                        ✏️ Editar
-                    </button>
-                    <button class="btn btn-secondary" onclick="eliminarEmpresa(${empresa.id})" style="padding: 6px 12px; font-size: 0.8rem; border-color: rgba(239,68,68,0.2); color: #F87171; background: rgba(239,68,68,0.05);">
-                        🗑️ Borrar
-                    </button>
-                </div>
+            <td>${contactoInfo}</td>
+            <td><span class="plazas-badge">${empresa.plazas_totales} plazas</span></td>
+            <td class="table-actions">
+                <button class="btn btn-secondary btn-table btn-table-info" onclick="abrirBitacoraEmpresa(${empresa.id}, '${empresa.nombre}')">📞 Bitácora</button>
+                <button class="btn btn-secondary btn-table" onclick="abrirModalEmpresa(${empresa.id}, '${empresa.nombre}', '${empresa.cif}', '', ${empresa.plazas_totales}, '${empresa.direccion || ''}', '${empresa.web || ''}', '${empresa.email || ''}', '${empresa.telefono || ''}', '${empresa.contacto_nombre || ''}', '${empresa.contacto_email || ''}', '${empresa.contacto_telefono || ''}', '${empresa.contacto_dni || ''}')">&#9998; Editar</button>
+                <button class="btn btn-secondary btn-table btn-table-danger" onclick="eliminarEmpresa(${empresa.id})">🗑️ Borrar</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -1493,16 +1669,24 @@ function filtrarEmpresasTabla() {
     renderEmpresasTabla(filtrados);
 }
 
-function abrirModalEmpresa(id = '', nombre = '', cif = '', contacto = '', plazas = 0) {
+function abrirModalEmpresa(id = '', nombre = '', cif = '', contacto = '', plazas = 0,
+    direccion = '', web = '', email = '', telefono = '',
+    cNombre = '', cEmail = '', cTelefono = '', cDni = '') {
+
     document.getElementById('empresa-id').value = id;
     document.getElementById('empresa-nombre').value = nombre;
     document.getElementById('empresa-cif').value = cif;
-    document.getElementById('empresa-contacto').value = contacto;
     document.getElementById('empresa-plazas').value = plazas;
-    
+    document.getElementById('empresa-direccion').value = direccion;
+    document.getElementById('empresa-web').value = web;
+    document.getElementById('empresa-email').value = email;
+    document.getElementById('empresa-telefono').value = telefono;
+    document.getElementById('empresa-contacto-nombre').value = cNombre;
+    document.getElementById('empresa-contacto-email').value = cEmail;
+    document.getElementById('empresa-contacto-telefono').value = cTelefono;
+    document.getElementById('empresa-contacto-dni').value = cDni;
     document.getElementById('empresa-form-error').textContent = '';
     document.getElementById('modal-empresa-title').textContent = id ? 'Editar Empresa' : 'Nueva Empresa Colaboradora';
-    
     openModal('modal-empresa');
 }
 
@@ -1512,30 +1696,31 @@ async function guardarEmpresa(e) {
     if (!token) return;
 
     const id = document.getElementById('empresa-id').value;
-    const nombre = document.getElementById('empresa-nombre').value;
-    const cif = document.getElementById('empresa-cif').value;
-    const contacto = document.getElementById('empresa-contacto').value;
-    const plazas = parseInt(document.getElementById('empresa-plazas').value) || 0;
-
     const errorEl = document.getElementById('empresa-form-error');
     errorEl.textContent = '';
 
     const url = id ? `${API_BASE_URL}/api/v1/empresas/${id}` : `${API_BASE_URL}/api/v1/empresas/`;
     const method = id ? 'PUT' : 'POST';
 
+    const body = {
+        nombre: document.getElementById('empresa-nombre').value,
+        cif: document.getElementById('empresa-cif').value,
+        plazas_totales: parseInt(document.getElementById('empresa-plazas').value) || 0,
+        direccion: document.getElementById('empresa-direccion').value || null,
+        web: document.getElementById('empresa-web').value || null,
+        email: document.getElementById('empresa-email').value || null,
+        telefono: document.getElementById('empresa-telefono').value || null,
+        contacto_nombre: document.getElementById('empresa-contacto-nombre').value || null,
+        contacto_email: document.getElementById('empresa-contacto-email').value || null,
+        contacto_telefono: document.getElementById('empresa-contacto-telefono').value || null,
+        contacto_dni: document.getElementById('empresa-contacto-dni').value || null
+    };
+
     try {
         const response = await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                nombre: nombre,
-                cif: cif,
-                contacto: contacto,
-                plazas_totales: plazas
-            })
+            method,
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(body)
         });
 
         if (!response.ok) {
@@ -1894,6 +2079,83 @@ async function eliminarProfesor(id) {
 // SECCIÓN DE CONFIGURACIÓN Y TEMA
 // ==========================================
 let currentUserId = null;
+let pendingAvatarBase64 = null;
+
+function cropAndResizeImage(file, targetWidth = 500, targetHeight = 500) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                // Minimum size validation
+                if (img.width < 100 || img.height < 100) {
+                    reject(new Error('La imagen de perfil debe tener unas dimensiones mínimas de 100x100 píxeles.'));
+                    return;
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+
+                const sourceAspect = img.width / img.height;
+                const targetAspect = targetWidth / targetHeight;
+                
+                let sourceX = 0;
+                let sourceY = 0;
+                let sourceWidth = img.width;
+                let sourceHeight = img.height;
+
+                if (sourceAspect > targetAspect) {
+                    sourceWidth = img.height * targetAspect;
+                    sourceX = (img.width - sourceWidth) / 2;
+                } else if (sourceAspect < targetAspect) {
+                    sourceHeight = img.width / targetAspect;
+                    sourceY = (img.height - sourceHeight) / 2;
+                }
+
+                ctx.drawImage(
+                    img,
+                    sourceX, sourceY, sourceWidth, sourceHeight,
+                    0, 0, targetWidth, targetHeight
+                );
+
+                const base64Data = canvas.toDataURL('image/jpeg', 0.9);
+                resolve(base64Data);
+            };
+            img.onerror = () => reject(new Error('El archivo seleccionado no es una imagen válida.'));
+            img.src = event.target.result;
+        };
+        reader.onerror = () => reject(new Error('Error al leer el archivo.'));
+        reader.readAsDataURL(file);
+    });
+}
+
+async function handleAvatarSelection(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const errorEl = document.getElementById('config-perfil-error');
+    if (errorEl) errorEl.textContent = '';
+
+    try {
+        const croppedBase64 = await cropAndResizeImage(file, 500, 500);
+        pendingAvatarBase64 = croppedBase64;
+
+        // Mostrar vista previa instantánea
+        const previewEl = document.getElementById('config-avatar-preview');
+        if (previewEl) {
+            previewEl.src = croppedBase64;
+            previewEl.style.display = 'block';
+            if (previewEl.nextElementSibling) {
+                previewEl.nextElementSibling.style.display = 'none';
+            }
+        }
+    } catch (err) {
+        if (errorEl) errorEl.textContent = err.message;
+        e.target.value = ''; // Limpiar input en caso de error
+    }
+}
 
 async function loadConfigData() {
     const token = localStorage.getItem('token');
@@ -1903,6 +2165,7 @@ async function loadConfigData() {
     const successEl = document.getElementById('config-perfil-success');
     if (errorEl) errorEl.textContent = '';
     if (successEl) successEl.textContent = '';
+    pendingAvatarBase64 = null;
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
@@ -1915,6 +2178,24 @@ async function loadConfigData() {
         document.getElementById('config-email').value = user.email;
         document.getElementById('config-nombre').value = user.full_name || '';
         document.getElementById('config-password').value = '';
+
+        // Poblar vista previa del avatar
+        const previewEl = document.getElementById('config-avatar-preview');
+        if (previewEl) {
+            if (user.profile_pic) {
+                previewEl.src = user.profile_pic;
+                previewEl.style.display = 'block';
+                if (previewEl.nextElementSibling) {
+                    previewEl.nextElementSibling.style.display = 'none';
+                }
+            } else {
+                previewEl.src = '';
+                previewEl.style.display = 'none';
+                if (previewEl.nextElementSibling) {
+                    previewEl.nextElementSibling.style.display = 'block';
+                }
+            }
+        }
     } catch (error) {
         if (errorEl) errorEl.textContent = error.message;
     }
@@ -1927,6 +2208,7 @@ async function guardarConfigPerfil(e) {
 
     const email = document.getElementById('config-email').value;
     const nombre = document.getElementById('config-nombre').value;
+    const currentPassword = document.getElementById('config-current-password').value;
     const password = document.getElementById('config-password').value;
 
     const errorEl = document.getElementById('config-perfil-error');
@@ -1934,11 +2216,18 @@ async function guardarConfigPerfil(e) {
     if (errorEl) errorEl.textContent = '';
     if (successEl) successEl.textContent = '';
 
+    if (password && !currentPassword) {
+        if (errorEl) errorEl.textContent = 'Debes ingresar tu contraseña antigua para poder definir una nueva.';
+        return;
+    }
+
     const bodyData = {
         email: email,
         full_name: nombre
     };
     if (password) bodyData.password = password;
+    if (currentPassword) bodyData.current_password = currentPassword;
+    if (pendingAvatarBase64) bodyData.profile_pic = pendingAvatarBase64;
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/v1/profesores/${currentUserId}`, {
@@ -1954,6 +2243,11 @@ async function guardarConfigPerfil(e) {
             const errData = await response.json().catch(() => ({ detail: 'Error al actualizar credenciales' }));
             throw new Error(errData.detail || 'Fallo al guardar configuración');
         }
+
+        // Limpiar inputs de contraseñas tras éxito
+        document.getElementById('config-password').value = '';
+        document.getElementById('config-current-password').value = '';
+        pendingAvatarBase64 = null;
 
         if (successEl) successEl.textContent = '¡Perfil de cuenta actualizado correctamente!';
         await loadUserProfile();

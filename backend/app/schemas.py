@@ -10,6 +10,7 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None 
     role: Optional[str] = "user"
+    profile_pic: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
@@ -25,6 +26,8 @@ class UserUpdate(BaseModel):
     email: Optional[str] = None
     full_name: Optional[str] = None
     password: Optional[str] = None
+    current_password: Optional[str] = None
+    profile_pic: Optional[str] = None
 
 
 
@@ -51,15 +54,26 @@ class EmpresaOut(BaseModel):
     id: int
     nombre: str
     cif: str
-    contacto: Optional[str] = None
     registrado_por: int
+    plazas_totales: int = 0
 
-    plazas_totales: int = 0 
+    # Datos generales
+    direccion: Optional[str] = None
+    web: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+
+    # Persona de contacto interna
+    contacto_nombre: Optional[str] = None
+    contacto_email: Optional[str] = None
+    contacto_telefono: Optional[str] = None
+    contacto_dni: Optional[str] = None
+
+    # Campo heredado
+    contacto: Optional[str] = None
 
     class Config:
         from_attributes = True
-
-
 
 #   ESQUEMA DE ALUMNO
 
@@ -68,14 +82,22 @@ class AlumnoOut(BaseModel):
     nombre: str
     apellido: str
     email: EmailStr
-    registrado_por: Optional[int]=None
-    empresa_asignada_id: Optional[int]=None
+    dni: Optional[str] = None
+    registrado_por: Optional[int] = None
+    empresa_asignada_id: Optional[int] = None
+    empresa_nombre: Optional[str] = None
     ciclo_id: Optional[int] = None
     telefono: Optional[str] = None
     cv_path: Optional[str] = None
+    tutor_docente_id: Optional[int] = None
+    tutor_docente_nombre: Optional[str] = None
+    tutor_laboral_nombre: Optional[str] = None
+    tutor_laboral_dni: Optional[str] = None
+    tutor_laboral_contacto: Optional[str] = None
 
     class Config:
         from_attributes = True
+
 
 
 
@@ -103,18 +125,28 @@ class ContactoBase(BaseModel):
 class EmpresaCreate(BaseModel):
     nombre: str
     cif: str
-    contacto: Optional[str] = None
     plazas_totales: int = 0
-    # plazas_totales empieza en 0 por defecto en el modelo
+
+    # Datos generales
+    direccion: Optional[str] = None
+    web: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+
+    # Persona de contacto interna
+    contacto_nombre: Optional[str] = None
+    contacto_email: Optional[str] = None
+    contacto_telefono: Optional[str] = None
+    contacto_dni: Optional[str] = None
 
 class AlumnoCreate(BaseModel):
     nombre: str
     apellido: str
     email: Optional[EmailStr]
+    dni: Optional[str] = None
     ciclo_id: Optional[int] = None
     telefono: Optional[str] = None
     cv_path: Optional[str] = None
-
 
 
 
@@ -138,12 +170,25 @@ class ContactoCreate(BaseModel):
 class EmpresaUpdate(BaseModel):
     nombre: Optional[str] = None
     cif: Optional[str] = None
-    contacto: Optional[str] = None
+    plazas_totales: Optional[int] = None
+
+    # Datos generales
+    direccion: Optional[str] = None
+    web: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+
+    # Persona de contacto interna
+    contacto_nombre: Optional[str] = None
+    contacto_email: Optional[str] = None
+    contacto_telefono: Optional[str] = None
+    contacto_dni: Optional[str] = None
 
 class AlumnoUpdate(BaseModel):
     nombre: Optional[str] = None
     apellido: Optional[str] = None
     email: Optional[EmailStr] = None
+    dni: Optional[str] = None
     ciclo_id: Optional[int] = None
     telefono: Optional[str] = None
     cv_path: Optional[str] = None
@@ -226,3 +271,12 @@ class CicloOut(CicloBase):
 
 class AsignarProfesor(BaseModel):
     profesor_id: int
+
+class StudentRegister(BaseModel):
+    nombre: str
+    apellido: str
+    email: EmailStr
+    password: str
+    dni: Optional[str] = None
+    telefono: Optional[str] = None
+    ciclo_id: Optional[int] = None

@@ -3,7 +3,7 @@
 Para que el Alumno A (Backend) y el Alumno B (Frontend) se entiendan sin hablar, seguiremos estas reglas:
 
 ## 1. Idioma
-*   **Código**: Inglés para nombres de variables, funciones y clases (ej: `getUser`, `$studentList`). Es el estándar profesional.
+*   **Código**: Inglés para nombres de variables, funciones y clases (ej: `getUser`, `studentList`). Es el estándar profesional.
 *   **Comentarios**: Español, para que nos entendamos rápido entre nosotros.
 *   **Base de Datos**: Español (como ya diseñamos las tablas).
 
@@ -14,7 +14,7 @@ Para que el Alumno A (Backend) y el Alumno B (Frontend) se entiendan sin hablar,
 
 ## 3. API (Rutas)
 *   Todas las rutas deben ser en minúsculas.
-*   Prefijo obligatorio: `/practica/app/`
+*   Prefijo obligatorio: `/api/v1/`
 
 
 ## 4. Git (Mensajes de Commit)
