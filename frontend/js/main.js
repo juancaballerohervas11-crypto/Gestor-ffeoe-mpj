@@ -2,7 +2,7 @@
 import { abrirModalPerfil } from './perfil.js';
 import { loadPlazasData, initPlazasEvents } from './plazas.js';
 
-const API_BASE_URL = 'http://10.12.0.65:8000'; // Asegúrate de que el backend esté corriendo en este puerto
+const API_BASE_URL = 'http://192.168.1.142:8000'; // Asegúrate de que el backend esté corriendo en este puerto
 
 // Variables de estado global
 let currentUserRole = null;
@@ -169,14 +169,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-function checkSession() {
+async function checkSession() {
     const token = localStorage.getItem('token');
     const overlay = document.getElementById('login-overlay');
 
     if (token) {
         overlay.classList.remove('active');
-        loadUserProfile();
-        switchView('dashboard-view');
+        await loadUserProfile();
+        if (currentUserRole === 'alumno') {
+            switchView('alumnos-view');
+        } else {
+            switchView('dashboard-view');
+        }
     } else {
         overlay.classList.add('active');
     }
@@ -221,7 +225,11 @@ async function handleLogin(e) {
 
         document.getElementById('login-overlay').classList.remove('active');
         await loadUserProfile();
-        switchView('dashboard-view');
+        if (currentUserRole === 'alumno') {
+            switchView('alumnos-view');
+        } else {
+            switchView('dashboard-view');
+        }
 
     } catch (error) {
         errorEl.textContent = error.message;
@@ -386,21 +394,34 @@ async function loadUserProfile() {
         }
 
         // Ocultar tabs si el usuario es alumno
+        const navDashboard = document.getElementById('nav-dashboard').parentElement;
+        const navAlumnos = document.getElementById('nav-alumnos');
         const navCiclos = document.getElementById('nav-ciclos').parentElement;
         const navEmpresas = document.getElementById('nav-empresas').parentElement;
         const navPlazas = document.getElementById('nav-plazas').parentElement;
         const navProfesores = document.getElementById('nav-profesores').parentElement;
+        const navConfig = document.getElementById('nav-config');
 
         if (currentUserRole === 'alumno') {
+            navDashboard.style.display = 'none';
             navCiclos.style.display = 'none';
             navEmpresas.style.display = 'none';
             navPlazas.style.display = 'none';
             navProfesores.style.display = 'none';
+
+            // Renombrar menús para alumnos
+            navAlumnos.innerHTML = '<span class="material-symbols-outlined icon">work</span> Mis practicas';
+            navConfig.innerHTML = '<span class="material-symbols-outlined icon">person</span> Mi perfil';
         } else {
+            navDashboard.style.display = 'block';
             navCiclos.style.display = 'block';
             navEmpresas.style.display = 'block';
             navPlazas.style.display = 'block';
             navProfesores.style.display = 'block';
+
+            // Restaurar nombres originales para administradores y profesores
+            navAlumnos.innerHTML = '<span class="material-symbols-outlined icon">school</span> Alumnado';
+            navConfig.innerHTML = '<span class="material-symbols-outlined icon">settings</span> Configuración';
         }
 
     } catch (error) {
@@ -448,11 +469,11 @@ function switchView(viewId) {
     const headerTitles = {
         'dashboard-view': { title: 'Resumen General', subtitle: 'Estado actual de asignaciones y plazas' },
         'ciclos-view': { title: 'Gestión de Ciclos', subtitle: 'Administración de ciclos formativos y asignaciones' },
-        'alumnos-view': { title: currentUserRole === 'alumno' ? 'Mi Perfil de Alumno' : 'Gestión de Alumnado', subtitle: currentUserRole === 'alumno' ? 'Consulta tu estado de asignación y tus datos' : 'Directorio general de estudiantes y carga de CVs' },
+        'alumnos-view': { title: currentUserRole === 'alumno' ? 'Mis practicas' : 'Gestión de Alumnado', subtitle: currentUserRole === 'alumno' ? 'Estado de tus prácticas FCT e historial académico' : 'Directorio general de estudiantes y carga de CVs' },
         'empresas-view': { title: 'Empresas Colaboradoras', subtitle: 'Convenios FCT/Dual, bitácora de llamadas y plazas' },
         'plazas-view': { title: 'Gestión de Plazas FCT', subtitle: 'Asigna alumnos a las plazas vacantes de empresas arrastrándolos y configurando sus tutores.' },
         'profesores-view': { title: 'Directorio de Profesores', subtitle: 'Personal docente, tutores de ciclo y accesos' },
-        'config-view': { title: 'Configuración', subtitle: 'Ajustes de perfil y personalización de la cuenta' }
+        'config-view': { title: currentUserRole === 'alumno' ? 'Mi perfil' : 'Configuración', subtitle: currentUserRole === 'alumno' ? 'Ajustes de tu perfil y personalización de la cuenta' : 'Ajustes de perfil y personalización de la cuenta' }
     };
 
     const headerInfo = headerTitles[viewId];
@@ -483,6 +504,9 @@ function switchView(viewId) {
         loadProfesoresData();
     } else if (viewId === 'config-view') {
         loadConfigData();
+        if (currentUserRole === 'alumno') {
+            loadMiPerfilData();
+        }
     }
 }
 
@@ -1406,6 +1430,35 @@ async function loadMiPerfilData() {
             `;
         }
 
+        // Rellenar historial de prácticas reales de forma 100% real
+        const timelineEl = document.getElementById('alumno-self-timeline');
+        if (timelineEl) {
+            if (alum.historial_practicas && alum.historial_practicas.length > 0) {
+                timelineEl.innerHTML = '';
+                alum.historial_practicas.forEach(item => {
+                    const timelineItem = document.createElement('div');
+                    timelineItem.className = 'timeline-item';
+                    timelineItem.style.position = 'relative';
+                    timelineItem.innerHTML = `
+                        <div class="timeline-dot" style="position: absolute; left: -27px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-green); border: 2px solid var(--bg-dark);"></div>
+                        <div style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 600; text-transform: uppercase;">${item.curso}</div>
+                        <h4 style="font-size: 0.95rem; font-weight: 600; margin: 4px 0; color: var(--text-primary);">${item.tipo}</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 4px 0;"><strong>Empresa:</strong> ${item.empresa}</p>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 2px 0;"><strong>Horas:</strong> ${item.horas} horas lectivas</p>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); padding: 2px 8px; font-size: 0.72rem; border-radius: 4px; margin-top: 6px; display: inline-block; font-weight: 600;">${item.resultado}</span>
+                    `;
+                    timelineEl.appendChild(timelineItem);
+                });
+            } else {
+                timelineEl.innerHTML = `
+                    <div style="color: var(--text-secondary); text-align: center; padding: 20px; font-size: 0.9rem; width: 100%;">
+                        No hay registros de prácticas académicas de cursos anteriores registrados en el sistema. 
+                        Las asignaciones de prácticas FCT que se realicen en el sistema quedarán guardadas aquí de forma real y automática.
+                    </div>
+                `;
+            }
+        }
+
     } catch (error) {
         console.error('Error loading self profile:', error);
         document.getElementById('alumno-self-error').textContent = 'Error al cargar tu ficha de perfil';
@@ -2178,6 +2231,15 @@ async function loadConfigData() {
         document.getElementById('config-email').value = user.email;
         document.getElementById('config-nombre').value = user.full_name || '';
         document.getElementById('config-password').value = '';
+
+        const extraEl = document.getElementById('config-alumno-extra');
+        if (extraEl) {
+            if (currentUserRole === 'alumno') {
+                extraEl.classList.remove('hidden');
+            } else {
+                extraEl.classList.add('hidden');
+            }
+        }
 
         // Poblar vista previa del avatar
         const previewEl = document.getElementById('config-avatar-preview');

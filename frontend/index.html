@@ -39,7 +39,7 @@
                     </li>
                     <li>
                         <a href="#" id="nav-alumnos">
-                            <span class="material-symbols-outlined icon">school</span> Alumnado
+                            <span class="material-symbols-outlined icon">work</span> Mis practicas
                         </a>
                     </li>
                     <li>
@@ -64,7 +64,7 @@
                     </li>
                     <li>
                         <a href="#" id="nav-config">
-                            <span class="material-symbols-outlined icon">settings</span> Configuración
+                            <span class="material-symbols-outlined icon">person</span> Mi perfil
                         </a>
                     </li>
                 </ul>
@@ -327,47 +327,13 @@
                 <!-- VISTA 2: PARA EL PROPIO ALUMNO -->
                 <div id="alumno-self-profile" class="hidden">
                     <div class="view-header" style="margin-bottom: 24px;">
-                        <h2 style="font-size: 1.6rem; font-weight: 700;">Mi Perfil de Alumno</h2>
+                        <h2 style="font-size: 1.6rem; font-weight: 700;">Mis Prácticas</h2>
                         <p class="subtitle" style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">
-                            Consulta tu estado de asignación y mantén actualizados tus datos de contacto y CV</p>
+                            Consulta el estado actual de tus prácticas FCT y tu historial académico.</p>
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
-                        <!-- Columna Izquierda: Información de contacto -->
-                        <div class="data-card glass-panel"
-                            style="padding: 30px; display: flex; flex-direction: column; gap: 20px;">
-                            <h3
-                                style="font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; margin: 0;">
-                                Datos del Estudiante</h3>
-                            <form id="form-alumno-perfil-self">
-                                <div class="form-group" style="margin-bottom: 16px;">
-                                    <label>Nombre y Apellidos</label>
-                                    <input type="text" id="alumno-self-nombre" disabled
-                                        style="width: 100%; opacity: 0.6; cursor: not-allowed; box-sizing: border-box;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 16px;">
-                                    <label for="alumno-self-email">Correo Electrónico</label>
-                                    <input type="email" id="alumno-self-email" required
-                                        style="width: 100%; box-sizing: border-box;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 20px;">
-                                    <label for="alumno-self-telefono">Teléfono de Contacto</label>
-                                    <input type="text" id="alumno-self-telefono" placeholder="Ej: 600123456"
-                                        style="width: 100%; box-sizing: border-box;">
-                                </div>
-                                <div class="error-message" id="alumno-self-error"
-                                    style="margin-bottom: 12px; text-align: left;"></div>
-                                <div class="success-message" id="alumno-self-success"
-                                    style="color: var(--accent-green); font-size: 0.85rem; margin-bottom: 12px; font-weight: 500;">
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="btn-guardar-self-perfil"
-                                    style="width: 100%; justify-content: center;">
-                                    💾 Guardar Cambios
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Columna Derecha: CV y Estado -->
+                        <!-- Columna Izquierda: Estado actual de FCT -->
                         <div style="display: flex; flex-direction: column; gap: 24px;">
                             <!-- Estado de Asignación -->
                             <div class="data-card glass-panel" style="padding: 30px;">
@@ -407,31 +373,23 @@
                                             style="color: var(--text-secondary); font-weight: 500;">-</span></div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Card de Curriculum Vitae (PDF) -->
-                            <div class="data-card glass-panel"
-                                style="padding: 30px; display: flex; flex-direction: column; gap: 16px;">
+                        <!-- Columna Derecha: Historial de Prácticas de otros cursos -->
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="data-card glass-panel" style="padding: 30px;">
                                 <h3
-                                    style="font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; margin: 0;">
-                                    Currículum Vitae (CV)</h3>
-                                <div id="cv-status-container" style="font-size: 0.9rem; color: var(--text-secondary);">
-                                    Cargando estado del CV...
+                                    style="font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; margin-bottom: 16px;">
+                                    📜 Historial de Prácticas Académicas
+                                </h3>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">
+                                    Historial y registro de prácticas y convenios Dual realizados en cursos académicos
+                                    anteriores.
+                                </p>
+                                <div class="timeline" id="alumno-self-timeline"
+                                    style="display: flex; flex-direction: column; gap: 24px; position: relative; padding-left: 20px; border-left: 2px solid rgba(59, 130, 246, 0.2);">
+                                    <!-- Cargado dinámicamente -->
                                 </div>
-                                <form id="form-alumno-cv"
-                                    style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
-                                    <label for="alumno-cv-file"
-                                        style="font-size: 0.85rem; color: var(--text-secondary);">Subir nuevo CV
-                                        (Formato PDF únicamente):</label>
-                                    <input type="file" id="alumno-cv-file" accept="application/pdf" required
-                                        style="padding: 10px; border: 1px dashed var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); background: rgba(0,0,0,0.15); width: 100%; box-sizing: border-box;">
-                                    <div class="error-message" id="alumno-cv-error" style="text-align: left;"></div>
-                                    <div class="success-message" id="alumno-cv-success"
-                                        style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
-                                    <button type="submit" class="btn btn-primary" id="btn-subir-cv"
-                                        style="align-self: flex-start; width: 100%; justify-content: center;">
-                                        📤 Subir Currículum
-                                    </button>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -553,7 +511,7 @@
                             style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 16px;">
                             <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary);">🏢 Empresas y
                                 Plazas Acordadas</h3>
-                            <input type="text" id="plazas-search-empresa" placeholder="Filtrar empresas..."
+                            <input type="text" id="plazas-search-empresa" placeholder="Buscar empresas..."
                                 class="search-input"
                                 style="padding: 8px 12px; width: 220px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); background: rgba(0,0,0,0.2); color: var(--text-primary); font-size: 0.85rem;">
                         </div>
@@ -667,7 +625,7 @@
                             <h3 class="card-title">Acerca de la Plataforma</h3>
                             <div class="about-section">
                                 <p><strong>Plataforma:</strong> Gestor FFOE - HLANZ</p>
-                                <p><strong>Versión:</strong> 1.0.0 (Edición Estable)</p>
+                                <p><strong>Versión:</strong> 1.0.0</p>
                                 <p><strong>Tecnología:</strong> FastAPI + SQLAlchemy (Backend) / Vanilla Web Standards
                                     (Frontend)</p>
                                 <p>Desarrollado para la optimización de convenios de FCT y seguimiento del alumnado en
@@ -675,6 +633,57 @@
                                 <p>Creado por <strong>Marcos Aragón, Juan Caballero y Pedro González</strong></p>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Ajustes Adicionales de Alumno (CV y Teléfono) -->
+                <div id="config-alumno-extra" class="hidden"
+                    style="margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                    <!-- Datos de Contacto Alumno -->
+                    <div class="data-card glass-panel card-padded">
+                        <h3 class="card-title">Datos de Contacto de Alumno</h3>
+                        <form id="form-alumno-perfil-self">
+                            <div class="form-group">
+                                <label>Nombre y Apellidos</label>
+                                <input type="text" id="alumno-self-nombre" disabled
+                                    style="width: 100%; opacity: 0.6; cursor: not-allowed; box-sizing: border-box;">
+                            </div>
+                            <div class="form-group">
+                                <label for="alumno-self-email">Correo Electrónico</label>
+                                <input type="email" id="alumno-self-email" required
+                                    style="width: 100%; box-sizing: border-box;">
+                            </div>
+                            <div class="form-group">
+                                <label for="alumno-self-telefono">Teléfono de Contacto</label>
+                                <input type="text" id="alumno-self-telefono" placeholder="Ej: 600123456"
+                                    style="width: 100%; box-sizing: border-box;">
+                            </div>
+                            <div class="error-message" id="alumno-self-error" style="text-align: left;"></div>
+                            <div class="success-message" id="alumno-self-success"
+                                style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
+                            <button type="submit" class="btn btn-primary btn-full" id="btn-guardar-self-perfil">
+                                💾 Guardar Datos de Contacto
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Curriculum Vitae (PDF) -->
+                    <div class="data-card glass-panel card-padded">
+                        <h3 class="card-title">Currículum Vitae (CV)</h3>
+                        <div id="cv-status-container" style="font-size: 0.9rem; color: var(--text-secondary);">
+                            Cargando estado del CV...
+                        </div>
+                        <form id="form-alumno-cv" class="cv-form">
+                            <label for="alumno-cv-file" class="file-input-label">Subir nuevo CV (Formato PDF
+                                únicamente):</label>
+                            <input type="file" id="alumno-cv-file" accept="application/pdf" required class="file-input">
+                            <div class="error-message" id="alumno-cv-error" style="text-align: left;"></div>
+                            <div class="success-message" id="alumno-cv-success"
+                                style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
+                            <button type="submit" class="btn btn-primary btn-full" id="btn-subir-cv">
+                                📤 Subir Currículum
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -77,6 +77,19 @@ class EmpresaOut(BaseModel):
 
 #   ESQUEMA DE ALUMNO
 
+class HistorialPracticaOut(BaseModel):
+    id: int
+    alumno_id: int
+    curso: str
+    tipo: str
+    empresa: str
+    horas: int
+    resultado: str
+
+    class Config:
+        from_attributes = True
+
+
 class AlumnoOut(BaseModel):
     id: int
     nombre: str
@@ -94,6 +107,7 @@ class AlumnoOut(BaseModel):
     tutor_laboral_nombre: Optional[str] = None
     tutor_laboral_dni: Optional[str] = None
     tutor_laboral_contacto: Optional[str] = None
+    historial_practicas: List[HistorialPracticaOut] = []
 
     class Config:
         from_attributes = True

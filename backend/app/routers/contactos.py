@@ -126,6 +126,22 @@ def asignar_alumno_a_empresa(
         alumno.tutor_laboral_dni = empresa.contacto_dni
         alumno.tutor_laboral_contacto = f"{empresa.contacto_email or ''} | {empresa.contacto_telefono or ''}".strip(" | ")
 
+    # Guardar en el historial de prácticas reales del alumno de forma persistente
+    from datetime import datetime
+    curso_nombre = f"Curso {datetime.now().year} - {datetime.now().year + 1}"
+    if alumno.ciclo:
+        curso_nombre = f"Curso {alumno.ciclo.ano_inicio} - {alumno.ciclo.ano_fin} ({alumno.ciclo.nombre})"
+    
+    historial_entry = models.HistorialPractica(
+        alumno_id=alumno.id,
+        curso=curso_nombre,
+        tipo="FCT / Dual",
+        empresa=empresa.nombre,
+        horas=380,
+        resultado="APTO"
+    )
+    db.add(historial_entry)
+
     db.commit()
     return {"message": f"Alumno {alumno.nombre} asignado a {empresa.nombre} con éxito"}
 
