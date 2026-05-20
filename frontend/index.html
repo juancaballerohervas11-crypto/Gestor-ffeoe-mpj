@@ -39,7 +39,7 @@
                     </li>
                     <li>
                         <a href="#" id="nav-alumnos">
-                            <span class="material-symbols-outlined icon">work</span> Mis practicas
+                            <span class="material-symbols-outlined icon">work</span> Mis prácticas
                         </a>
                     </li>
                     <li>
@@ -326,12 +326,6 @@
 
                 <!-- VISTA 2: PARA EL PROPIO ALUMNO -->
                 <div id="alumno-self-profile" class="hidden">
-                    <div class="view-header" style="margin-bottom: 24px;">
-                        <h2 style="font-size: 1.6rem; font-weight: 700;">Mis Prácticas</h2>
-                        <p class="subtitle" style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">
-                            Consulta el estado actual de tus prácticas FCT y tu historial académico.</p>
-                    </div>
-
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
                         <!-- Columna Izquierda: Estado actual de FCT -->
                         <div style="display: flex; flex-direction: column; gap: 24px;">
@@ -343,8 +337,7 @@
                                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                                     <div style="font-size: 2.2rem;">💼</div>
                                     <div>
-                                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Estado de
-                                            Asignación</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Estado</div>
                                         <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary);"
                                             id="alumno-self-estado">Cargando...</div>
                                     </div>
@@ -567,8 +560,7 @@
                                     <label for="config-avatar-input" class="profile-avatar-upload-label">
                                         <span class="material-symbols-outlined">photo_camera</span> Subir Foto de Perfil
                                     </label>
-                                    <span class="profile-avatar-upload-info">Mínimo 100x100px. Se adaptará
-                                        automáticamente a 500x500px.</span>
+                                    <span class="profile-avatar-upload-info">Tamaño mínimo: <br> 100x100px.</span>
                                     <input type="file" id="config-avatar-input" accept="image/*"
                                         class="profile-avatar-file-input">
                                 </div>
@@ -584,8 +576,7 @@
                                     class="input-full">
                             </div>
                             <div class="form-group">
-                                <label for="config-current-password">Contraseña Antigua (Requerida para cambiar
-                                    contraseña)</label>
+                                <label for="config-current-password">Contraseña Actual (Requerida)</label>
                                 <input type="password" id="config-current-password" placeholder="Contraseña actual"
                                     class="input-full">
                             </div>
@@ -606,33 +597,43 @@
                     <div class="profile-right-col">
                         <!-- Selector de Temas -->
                         <div class="data-card glass-panel card-padded">
-                            <h3 class="card-title">Temas Visuales</h3>
-                            <p class="about-section">Elige la combinación cromática que mejor se adapte a tu estilo de
-                                trabajo:</p>
+                            <h3 class="card-title">Tema</h3>
                             <div class="theme-grid">
                                 <button type="button" class="btn theme-btn theme-dark" data-theme="dark">
-                                    Modo Oscuro
+                                    Oscuro
                                 </button>
                                 <button type="button" class="btn theme-btn theme-light" data-theme="light">
-                                    Modo Claro
+                                    Claro
                                 </button>
                             </div>
 
                         </div>
 
-                        <!-- Info del Sistema -->
-                        <div class="data-card glass-panel card-padded">
-                            <h3 class="card-title">Acerca de la Plataforma</h3>
-                            <div class="about-section">
-                                <p><strong>Plataforma:</strong> Gestor FFEOE - HLANZ</p>
-                                <p><strong>Versión:</strong> 1.0.0</p>
-                                <p><strong>Tecnología:</strong> FastAPI + SQLAlchemy (Backend) / Vanilla Web Standards
-                                    (Frontend)</p>
-                                <p>Desarrollado para la optimización de convenios de FCT y seguimiento del alumnado en
-                                    ciclos superiores.</p>
-                                <p>Creado por <strong>Marcos Aragón, Juan Caballero y Pedro González</strong></p>
-                            </div>
+                        
+                    <!-- Curriculum Vitae (PDF) -->
+                    <div class="data-card glass-panel card-padded">
+                        <h3 class="card-title">Currículum Vitae (CV)</h3>
+                        <div id="cv-status-container" style="font-size: 0.9rem; color: var(--text-secondary);">
+                            Cargando estado del CV...
                         </div>
+                        <form id="form-alumno-cv" class="cv-form">
+                            <label for="alumno-cv-file" class="file-input-label">
+                                Subir nuevo CV ( .PDF):
+                            </label>
+                            <input type="file" id="alumno-cv-file" accept="application/pdf" required class="file-input">
+                            <div class="error-message" id="alumno-cv-error" style="text-align: left;"></div>
+                            <div class="success-message" id="alumno-cv-success"
+                                style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
+                            <button type="submit" class="btn btn-primary btn-full" id="btn-subir-cv">
+                                📤 Subir Currículum
+                            </button>
+                        </form>
+                    </div>
+
+
+
+                    
+                </div>
                     </div>
                 </div>
 
@@ -654,7 +655,7 @@
                                     style="width: 100%; box-sizing: border-box;">
                             </div>
                             <div class="form-group">
-                                <label for="alumno-self-telefono">Teléfono de Contacto</label>
+                                <label for="alumno-self-telefono">Teléfono</label>
                                 <input type="text" id="alumno-self-telefono" placeholder="Ej: 600123456"
                                     style="width: 100%; box-sizing: border-box;">
                             </div>
@@ -666,26 +667,18 @@
                             </button>
                         </form>
                     </div>
-
-                    <!-- Curriculum Vitae (PDF) -->
+                    
+                    <!-- Info del Sistema -->
                     <div class="data-card glass-panel card-padded">
-                        <h3 class="card-title">Currículum Vitae (CV)</h3>
-                        <div id="cv-status-container" style="font-size: 0.9rem; color: var(--text-secondary);">
-                            Cargando estado del CV...
+                        <h3 class="card-title">Acerca de</h3>
+                        <div class="about-section">
+                            <p><strong>Gestor FFEOE -  IES HLANZ</strong></p>
+                                <p><strong>Creado por:</strong> <i>Marcos Aragón, Juan Caballero y Pedro González</i></p>                                
+                                    <p><strong>Versión:</strong> 1.0.0 <b>BETA</b></p>
+                                <p><strong>Tecnología:</strong> FastAPI + SQLAlchemy (Backend) / Vanilla JS (Frontend)</p>
+                            <p>Proyecto desarrollado con el propósito de la optimización de asignaciones a prácticas de FCT y seguimiento del alumnado en ciclos de formación profesional.</p>
                         </div>
-                        <form id="form-alumno-cv" class="cv-form">
-                            <label for="alumno-cv-file" class="file-input-label">Subir nuevo CV (Formato PDF
-                                únicamente):</label>
-                            <input type="file" id="alumno-cv-file" accept="application/pdf" required class="file-input">
-                            <div class="error-message" id="alumno-cv-error" style="text-align: left;"></div>
-                            <div class="success-message" id="alumno-cv-success"
-                                style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
-                            <button type="submit" class="btn btn-primary btn-full" id="btn-subir-cv">
-                                📤 Subir Currículum
-                            </button>
-                        </form>
                     </div>
-                </div>
             </div>
     </div>
     </div>
