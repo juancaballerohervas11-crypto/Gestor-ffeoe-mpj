@@ -114,10 +114,14 @@ def asignar_alumno_a_empresa(
     # Set workplace tutor details
     if tutor_laboral_nombre:
         alumno.tutor_laboral_nombre = tutor_laboral_nombre
-        # If they match the company's contact name, let's copy their details
+        # If they match the company's main contact or any of the additional tutors, copy details
+        tutor_adicional = next((t for t in empresa.tutores if t.nombre == tutor_laboral_nombre), None)
         if empresa.contacto_nombre == tutor_laboral_nombre:
             alumno.tutor_laboral_dni = empresa.contacto_dni
             alumno.tutor_laboral_contacto = f"{empresa.contacto_email or ''} | {empresa.contacto_telefono or ''}".strip(" | ")
+        elif tutor_adicional:
+            alumno.tutor_laboral_dni = tutor_adicional.dni
+            alumno.tutor_laboral_contacto = f"{tutor_adicional.email or ''} | {tutor_adicional.telefono or ''}".strip(" | ")
         else:
             alumno.tutor_laboral_dni = None
             alumno.tutor_laboral_contacto = None
@@ -125,6 +129,22 @@ def asignar_alumno_a_empresa(
         alumno.tutor_laboral_nombre = empresa.contacto_nombre or "Pendiente de Asignar"
         alumno.tutor_laboral_dni = empresa.contacto_dni
         alumno.tutor_laboral_contacto = f"{empresa.contacto_email or ''} | {empresa.contacto_telefono or ''}".strip(" | ")
+
+    # Guardar en el historial de prácticas reales del alumno de forma persistente
+    from datetime import datetime
+    curso_nombre = f"Curso {datetime.now().year} - {datetime.now().year + 1}"
+    if alumno.ciclo:
+        curso_nombre = f"Curso {alumno.ciclo.ano_inicio} - {alumno.ciclo.ano_fin} ({alumno.ciclo.nombre})"
+    
+    historial_entry = models.HistorialPractica(
+        alumno_id=alumno.id,
+        curso=curso_nombre,
+        tipo="FCT / Dual",
+        empresa=empresa.nombre,
+        horas=380,
+        resultado="APTO"
+    )
+    db.add(historial_entry)
 
     db.commit()
     return {"message": f"Alumno {alumno.nombre} asignado a {empresa.nombre} con éxito"}

@@ -793,6 +793,13 @@ body::after {
     overflow-y: auto;
 }
 
+/* Modal que permite que los <select> nativos se desplieguen sin clipping */
+.modal-box-overflow-visible {
+    overflow: visible !important;
+    min-height: 480px;
+    padding-bottom: 160px;
+}
+
 /* Custom sleek scrollbar for modal-box */
 .modal-box::-webkit-scrollbar {
     width: 6px;
@@ -1784,4 +1791,165 @@ body[data-theme="light"]::before {
 
 .login-toggle-link:hover {
     color: var(--accent-purple);
+}
+
+/* ================================================
+   CUSTOM DROPDOWN (Tutor Laboral)
+   ================================================ */
+
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown-trigger {
+    width: 100%;
+    padding: 11px 14px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    user-select: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-height: 44px;
+}
+
+.custom-dropdown-trigger:hover {
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.custom-dropdown-trigger:focus,
+.custom-dropdown.open .custom-dropdown-trigger {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.custom-dropdown-trigger-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    color: var(--text-primary);
+}
+
+.custom-dropdown-trigger-text.placeholder {
+    color: var(--text-secondary);
+}
+
+.custom-dropdown-arrow {
+    flex-shrink: 0;
+    margin-left: 10px;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+}
+
+.custom-dropdown.open .custom-dropdown-arrow {
+    transform: rotate(180deg);
+    color: var(--accent-blue);
+}
+
+.custom-dropdown-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #1c2130;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-sm);
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 9999;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(59,130,246,0.1);
+}
+
+.custom-dropdown.open .custom-dropdown-list {
+    display: block;
+    animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.custom-dropdown-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #d1d5db;
+    transition: background 0.12s, color 0.12s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.custom-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.custom-dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.18);
+    color: #93c5fd;
+}
+
+.custom-dropdown-item.selected {
+    background: rgba(59, 130, 246, 0.14);
+    color: #60a5fa;
+    font-weight: 600;
+}
+
+.custom-dropdown-item.item-otro {
+    color: #6ee7b7;
+    font-style: italic;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    margin-top: 2px;
+}
+
+.custom-dropdown-item.item-disabled {
+    color: var(--text-muted);
+    font-style: italic;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Light mode */
+body[data-theme="light"] .custom-dropdown-trigger {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.18);
+    color: #111827;
+}
+
+body[data-theme="light"] .custom-dropdown-trigger:hover {
+    border-color: rgba(0, 0, 0, 0.32);
+}
+
+body[data-theme="light"] .custom-dropdown-list {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+body[data-theme="light"] .custom-dropdown-item {
+    color: #374151;
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+body[data-theme="light"] .custom-dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.08);
+    color: #2563eb;
+}
+
+body[data-theme="light"] .custom-dropdown-trigger-text.placeholder {
+    color: #9ca3af;
 }

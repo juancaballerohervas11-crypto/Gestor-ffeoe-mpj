@@ -1,7 +1,12 @@
 // js/perfil.js
-// Modal de perfil de usuario (boton del sidebar)
+// Modal de perfil de usuario
 
-const API_BASE = 'http://10.12.0.65:8000';
+
+const hostname = window.location.hostname || 'localhost';
+const protocol = window.location.protocol;
+const API_BASE = `${protocol}//${hostname}:8000`; // ASEGURAR de que el backend esté en este puerto
+
+
 
 export async function abrirModalPerfil() {
     const token = localStorage.getItem('token');

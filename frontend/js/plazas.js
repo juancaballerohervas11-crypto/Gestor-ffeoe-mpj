@@ -1,6 +1,10 @@
 // js/plazas.js
 
-const API_BASE_URL = 'http://localhost:8000';
+const hostname = window.location.hostname || 'localhost';
+const protocol = window.location.protocol;
+const API_BASE_URL = `${protocol}//${hostname}:8000`;
+
+
 
 let plazasAlumnos = [];
 let plazasEmpresas = [];
@@ -306,13 +310,86 @@ function abrirModalTutorAsignacion(alumnoId, alumnoNombre, empresaId, empresaNom
     document.getElementById('at-alumno-nombre').textContent = alumnoNombre;
     document.getElementById('at-empresa-nombre').textContent = empresaNombre;
 
-    // Prefilar tutor laboral con el contacto de la empresa si existe
-    document.getElementById('at-tutor-laboral').value = contactoNombre || '';
+    // Resetear custom dropdown de tutor laboral
+    const optionsContainer = document.getElementById('at-tutor-laboral-options');
+    const displayEl = document.getElementById('at-tutor-laboral-display');
+    const hiddenInput = document.getElementById('at-tutor-laboral');
+    const wrapper = document.getElementById('at-tutor-laboral-wrapper');
 
-    // Cargar select de profesores docentes
+    optionsContainer.innerHTML = '';
+    displayEl.textContent = '-- Selecciona Tutor Laboral --';
+    displayEl.classList.add('placeholder');
+    hiddenInput.value = '';
+    wrapper.classList.remove('open');
+
+    // Helper para añadir items al dropdown
+    function addItem(value, text, isSelected = false, extraClass = '') {
+        const div = document.createElement('div');
+        div.className = 'custom-dropdown-item' + (extraClass ? ' ' + extraClass : '') + (isSelected ? ' selected' : '');
+        div.dataset.value = value;
+        div.textContent = text;
+        if (isSelected) {
+            displayEl.textContent = text;
+            displayEl.classList.remove('placeholder');
+            hiddenInput.value = value;
+        }
+        optionsContainer.appendChild(div);
+    }
+
+    // Recopilar contactos únicos de empresas y alumnos
+    const contactosUnicos = new Set();
+
+    plazasEmpresas.forEach(emp => {
+        if (emp.contacto_nombre && emp.contacto_nombre.trim()) contactosUnicos.add(emp.contacto_nombre.trim());
+        if (emp.contacto && emp.contacto.trim()) contactosUnicos.add(emp.contacto.trim());
+        if (emp.tutores && Array.isArray(emp.tutores)) {
+            emp.tutores.forEach(t => { if (t.nombre && t.nombre.trim()) contactosUnicos.add(t.nombre.trim()); });
+        }
+    });
+
+    plazasAlumnos.forEach(al => {
+        if (al.tutor_laboral_nombre && al.tutor_laboral_nombre.trim() && al.tutor_laboral_nombre.trim() !== 'Pendiente de Asignar') {
+            contactosUnicos.add(al.tutor_laboral_nombre.trim());
+        }
+    });
+
+    console.log('Contactos únicos para dropdown:', Array.from(contactosUnicos));
+
+    // Primero el contacto de esta empresa (preseleccionado)
+    const currentContacto = contactoNombre ? contactoNombre.trim() : '';
+    if (currentContacto) {
+        addItem(currentContacto, `⭐ ${currentContacto} (Contacto de esta empresa)`, true);
+        contactosUnicos.delete(currentContacto);
+    }
+
+    // El resto de contactos
+    contactosUnicos.forEach(contacto => {
+        const empAsociadas = plazasEmpresas.filter(emp => {
+            const hasPrimary = emp.contacto_nombre && emp.contacto_nombre.trim() === contacto;
+            const hasLegacy = emp.contacto && emp.contacto.trim() === contacto;
+            const hasAdditional = emp.tutores && emp.tutores.some(t => t.nombre && t.nombre.trim() === contacto);
+            return hasPrimary || hasLegacy || hasAdditional;
+        });
+        const label = empAsociadas.length > 0
+            ? `${contacto} (${empAsociadas.map(e => e.nombre).join(', ')})`
+            : contacto;
+        addItem(contacto, label);
+    });
+
+    // Si no hay ningún contacto aún, mostrar mensaje informativo
+    if (optionsContainer.children.length === 0) {
+        const div = document.createElement('div');
+        div.className = 'custom-dropdown-item item-disabled';
+        div.textContent = '⚠️ Sin contactos — añade uno con la opción de abajo';
+        optionsContainer.appendChild(div);
+    }
+
+    // Opción escribir personalizado
+    addItem('OTRO', '➕ Añadir tutor personalizado...', false, 'item-otro');
+
+    // Cargar select de profesores docentes (nativo, sin problemas)
     const select = document.getElementById('at-tutor-docente');
     select.innerHTML = '<option value="">-- Selecciona Tutor Docente --</option>';
-
     plazasProfesores.forEach(prof => {
         const opt = document.createElement('option');
         opt.value = prof.id;
@@ -329,12 +406,65 @@ function cerrarModalTutors() {
     const modal = document.getElementById('modal-asignar-tutors');
     modal.classList.remove('active');
     document.getElementById('form-asignar-tutors').reset();
+    // También cerrar el dropdown custom si está abierto
+    const wrapper = document.getElementById('at-tutor-laboral-wrapper');
+    if (wrapper) wrapper.classList.remove('open');
+    const hiddenInput = document.getElementById('at-tutor-laboral');
+    if (hiddenInput) hiddenInput.value = '';
+    const displayEl = document.getElementById('at-tutor-laboral-display');
+    if (displayEl) { displayEl.textContent = '-- Selecciona Tutor Laboral --'; displayEl.classList.add('placeholder'); }
 }
 
 // Registrar eventos del modal al inicializar
 export function initPlazasEvents() {
     document.getElementById('btn-close-asignar-tutors').addEventListener('click', cerrarModalTutors);
     document.getElementById('btn-cancelar-asignar-tutors').addEventListener('click', cerrarModalTutors);
+
+    // --- Custom Dropdown Tutor Laboral ---
+    const laboralWrapper = document.getElementById('at-tutor-laboral-wrapper');
+    const laboralTrigger = document.getElementById('at-tutor-laboral-trigger');
+    const laboralOptions = document.getElementById('at-tutor-laboral-options');
+    const laboralDisplay = document.getElementById('at-tutor-laboral-display');
+    const laboralHidden = document.getElementById('at-tutor-laboral');
+
+    // Abrir/cerrar al hacer clic en el trigger
+    laboralTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        laboralWrapper.classList.toggle('open');
+    });
+
+    laboralTrigger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); laboralWrapper.classList.toggle('open'); }
+        if (e.key === 'Escape') laboralWrapper.classList.remove('open');
+    });
+
+    // Seleccionar una opción
+    laboralOptions.addEventListener('click', (e) => {
+        const item = e.target.closest('.custom-dropdown-item');
+        if (!item || !item.dataset.value) return;
+
+        if (item.dataset.value === 'OTRO') {
+            laboralWrapper.classList.remove('open');
+            const nuevoTutor = prompt('Introduce el nombre del tutor laboral:');
+            if (nuevoTutor && nuevoTutor.trim()) {
+                laboralHidden.value = nuevoTutor.trim();
+                laboralDisplay.textContent = nuevoTutor.trim();
+                laboralDisplay.classList.remove('placeholder');
+            }
+        } else {
+            laboralHidden.value = item.dataset.value;
+            laboralDisplay.textContent = item.textContent;
+            laboralDisplay.classList.remove('placeholder');
+            laboralOptions.querySelectorAll('.custom-dropdown-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            laboralWrapper.classList.remove('open');
+        }
+    });
+
+    // Cerrar si se hace clic fuera
+    document.addEventListener('click', () => {
+        if (laboralWrapper) laboralWrapper.classList.remove('open');
+    });
 
     document.getElementById('form-asignar-tutors').addEventListener('submit', async (e) => {
         e.preventDefault();

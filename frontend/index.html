@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" href="./images/logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gestión FFOE</title>
+    <title>Dashboard - Gestión FFEOE</title>
     <meta name="description"
         content="Dashboard principal del Sistema de Gestión de prácticas para alumnado de Formación Profesional.">
 
@@ -27,7 +27,7 @@
             <div class="sidebar-header">
                 <div class="logo-container">
                     <div class="logo-icon"><img src="./images/logo.png" alt=""></div>
-                    <h1>Gestor <span>FFOE</span></h1>
+                    <h1>Gestor <span>FFEOE</span></h1>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -39,7 +39,7 @@
                     </li>
                     <li>
                         <a href="#" id="nav-alumnos">
-                            <span class="material-symbols-outlined icon">school</span> Alumnado
+                            <span class="material-symbols-outlined icon">work</span> Mis prácticas
                         </a>
                     </li>
                     <li>
@@ -64,7 +64,7 @@
                     </li>
                     <li>
                         <a href="#" id="nav-config">
-                            <span class="material-symbols-outlined icon">settings</span> Configuración
+                            <span class="material-symbols-outlined icon">person</span> Mi perfil
                         </a>
                     </li>
                 </ul>
@@ -326,48 +326,8 @@
 
                 <!-- VISTA 2: PARA EL PROPIO ALUMNO -->
                 <div id="alumno-self-profile" class="hidden">
-                    <div class="view-header" style="margin-bottom: 24px;">
-                        <h2 style="font-size: 1.6rem; font-weight: 700;">Mi Perfil de Alumno</h2>
-                        <p class="subtitle" style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">
-                            Consulta tu estado de asignación y mantén actualizados tus datos de contacto y CV</p>
-                    </div>
-
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
-                        <!-- Columna Izquierda: Información de contacto -->
-                        <div class="data-card glass-panel"
-                            style="padding: 30px; display: flex; flex-direction: column; gap: 20px;">
-                            <h3
-                                style="font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; margin: 0;">
-                                Datos del Estudiante</h3>
-                            <form id="form-alumno-perfil-self">
-                                <div class="form-group" style="margin-bottom: 16px;">
-                                    <label>Nombre y Apellidos</label>
-                                    <input type="text" id="alumno-self-nombre" disabled
-                                        style="width: 100%; opacity: 0.6; cursor: not-allowed; box-sizing: border-box;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 16px;">
-                                    <label for="alumno-self-email">Correo Electrónico</label>
-                                    <input type="email" id="alumno-self-email" required
-                                        style="width: 100%; box-sizing: border-box;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 20px;">
-                                    <label for="alumno-self-telefono">Teléfono de Contacto</label>
-                                    <input type="text" id="alumno-self-telefono" placeholder="Ej: 600123456"
-                                        style="width: 100%; box-sizing: border-box;">
-                                </div>
-                                <div class="error-message" id="alumno-self-error"
-                                    style="margin-bottom: 12px; text-align: left;"></div>
-                                <div class="success-message" id="alumno-self-success"
-                                    style="color: var(--accent-green); font-size: 0.85rem; margin-bottom: 12px; font-weight: 500;">
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="btn-guardar-self-perfil"
-                                    style="width: 100%; justify-content: center;">
-                                    💾 Guardar Cambios
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Columna Derecha: CV y Estado -->
+                        <!-- Columna Izquierda: Estado actual de FCT -->
                         <div style="display: flex; flex-direction: column; gap: 24px;">
                             <!-- Estado de Asignación -->
                             <div class="data-card glass-panel" style="padding: 30px;">
@@ -377,8 +337,7 @@
                                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                                     <div style="font-size: 2.2rem;">💼</div>
                                     <div>
-                                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Estado de
-                                            Asignación</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary);">Estado</div>
                                         <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary);"
                                             id="alumno-self-estado">Cargando...</div>
                                     </div>
@@ -407,31 +366,23 @@
                                             style="color: var(--text-secondary); font-weight: 500;">-</span></div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Card de Curriculum Vitae (PDF) -->
-                            <div class="data-card glass-panel"
-                                style="padding: 30px; display: flex; flex-direction: column; gap: 16px;">
+                        <!-- Columna Derecha: Historial de Prácticas de otros cursos -->
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="data-card glass-panel" style="padding: 30px;">
                                 <h3
-                                    style="font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; margin: 0;">
-                                    Currículum Vitae (CV)</h3>
-                                <div id="cv-status-container" style="font-size: 0.9rem; color: var(--text-secondary);">
-                                    Cargando estado del CV...
+                                    style="font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; margin-bottom: 16px;">
+                                    📜 Historial de Prácticas Académicas
+                                </h3>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">
+                                    Historial y registro de prácticas y convenios Dual realizados en cursos académicos
+                                    anteriores.
+                                </p>
+                                <div class="timeline" id="alumno-self-timeline"
+                                    style="display: flex; flex-direction: column; gap: 24px; position: relative; padding-left: 20px; border-left: 2px solid rgba(59, 130, 246, 0.2);">
+                                    <!-- Cargado dinámicamente -->
                                 </div>
-                                <form id="form-alumno-cv"
-                                    style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
-                                    <label for="alumno-cv-file"
-                                        style="font-size: 0.85rem; color: var(--text-secondary);">Subir nuevo CV
-                                        (Formato PDF únicamente):</label>
-                                    <input type="file" id="alumno-cv-file" accept="application/pdf" required
-                                        style="padding: 10px; border: 1px dashed var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); background: rgba(0,0,0,0.15); width: 100%; box-sizing: border-box;">
-                                    <div class="error-message" id="alumno-cv-error" style="text-align: left;"></div>
-                                    <div class="success-message" id="alumno-cv-success"
-                                        style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
-                                    <button type="submit" class="btn btn-primary" id="btn-subir-cv"
-                                        style="align-self: flex-start; width: 100%; justify-content: center;">
-                                        📤 Subir Currículum
-                                    </button>
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -553,7 +504,7 @@
                             style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 16px;">
                             <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary);">🏢 Empresas y
                                 Plazas Acordadas</h3>
-                            <input type="text" id="plazas-search-empresa" placeholder="Filtrar empresas..."
+                            <input type="text" id="plazas-search-empresa" placeholder="Buscar empresas..."
                                 class="search-input"
                                 style="padding: 8px 12px; width: 220px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); background: rgba(0,0,0,0.2); color: var(--text-primary); font-size: 0.85rem;">
                         </div>
@@ -609,8 +560,7 @@
                                     <label for="config-avatar-input" class="profile-avatar-upload-label">
                                         <span class="material-symbols-outlined">photo_camera</span> Subir Foto de Perfil
                                     </label>
-                                    <span class="profile-avatar-upload-info">Mínimo 100x100px. Se adaptará
-                                        automáticamente a 500x500px.</span>
+                                    <span class="profile-avatar-upload-info">Tamaño mínimo: <br> 100x100px.</span>
                                     <input type="file" id="config-avatar-input" accept="image/*"
                                         class="profile-avatar-file-input">
                                 </div>
@@ -626,8 +576,7 @@
                                     class="input-full">
                             </div>
                             <div class="form-group">
-                                <label for="config-current-password">Contraseña Antigua (Requerida para cambiar
-                                    contraseña)</label>
+                                <label for="config-current-password">Contraseña Actual (Requerida)</label>
                                 <input type="password" id="config-current-password" placeholder="Contraseña actual"
                                     class="input-full">
                             </div>
@@ -648,35 +597,88 @@
                     <div class="profile-right-col">
                         <!-- Selector de Temas -->
                         <div class="data-card glass-panel card-padded">
-                            <h3 class="card-title">Temas Visuales</h3>
-                            <p class="about-section">Elige la combinación cromática que mejor se adapte a tu estilo de
-                                trabajo:</p>
+                            <h3 class="card-title">Tema</h3>
                             <div class="theme-grid">
                                 <button type="button" class="btn theme-btn theme-dark" data-theme="dark">
-                                    Modo Oscuro
+                                    Oscuro
                                 </button>
                                 <button type="button" class="btn theme-btn theme-light" data-theme="light">
-                                    Modo Claro
+                                    Claro
                                 </button>
                             </div>
 
                         </div>
 
-                        <!-- Info del Sistema -->
-                        <div class="data-card glass-panel card-padded">
-                            <h3 class="card-title">Acerca de la Plataforma</h3>
-                            <div class="about-section">
-                                <p><strong>Plataforma:</strong> Gestor FFOE - HLANZ</p>
-                                <p><strong>Versión:</strong> 1.0.0 (Edición Estable)</p>
-                                <p><strong>Tecnología:</strong> FastAPI + SQLAlchemy (Backend) / Vanilla Web Standards
-                                    (Frontend)</p>
-                                <p>Desarrollado para la optimización de convenios de FCT y seguimiento del alumnado en
-                                    ciclos superiores.</p>
-                                <p>Creado por <strong>Marcos Aragón, Juan Caballero y Pedro González</strong></p>
-                            </div>
+                        
+                    <!-- Curriculum Vitae (PDF) -->
+                    <div class="data-card glass-panel card-padded">
+                        <h3 class="card-title">Currículum Vitae (CV)</h3>
+                        <div id="cv-status-container" style="font-size: 0.9rem; color: var(--text-secondary);">
+                            Cargando estado del CV...
                         </div>
+                        <form id="form-alumno-cv" class="cv-form">
+                            <label for="alumno-cv-file" class="file-input-label">
+                                Subir nuevo CV ( .PDF):
+                            </label>
+                            <input type="file" id="alumno-cv-file" accept="application/pdf" required class="file-input">
+                            <div class="error-message" id="alumno-cv-error" style="text-align: left;"></div>
+                            <div class="success-message" id="alumno-cv-success"
+                                style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
+                            <button type="submit" class="btn btn-primary btn-full" id="btn-subir-cv">
+                                📤 Subir Currículum
+                            </button>
+                        </form>
+                    </div>
+
+
+
+                    
+                </div>
                     </div>
                 </div>
+
+                <!-- Ajustes Adicionales de Alumno (CV y Teléfono) -->
+                <div id="config-alumno-extra" class="hidden"
+                    style="margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                    <!-- Datos de Contacto Alumno -->
+                    <div class="data-card glass-panel card-padded">
+                        <h3 class="card-title">Datos de Contacto de Alumno</h3>
+                        <form id="form-alumno-perfil-self">
+                            <div class="form-group">
+                                <label>Nombre y Apellidos</label>
+                                <input type="text" id="alumno-self-nombre" disabled
+                                    style="width: 100%; opacity: 0.6; cursor: not-allowed; box-sizing: border-box;">
+                            </div>
+                            <div class="form-group">
+                                <label for="alumno-self-email">Correo Electrónico</label>
+                                <input type="email" id="alumno-self-email" required
+                                    style="width: 100%; box-sizing: border-box;">
+                            </div>
+                            <div class="form-group">
+                                <label for="alumno-self-telefono">Teléfono</label>
+                                <input type="text" id="alumno-self-telefono" placeholder="Ej: 600123456"
+                                    style="width: 100%; box-sizing: border-box;">
+                            </div>
+                            <div class="error-message" id="alumno-self-error" style="text-align: left;"></div>
+                            <div class="success-message" id="alumno-self-success"
+                                style="color: var(--accent-green); font-size: 0.85rem; font-weight: 500;"></div>
+                            <button type="submit" class="btn btn-primary btn-full" id="btn-guardar-self-perfil">
+                                💾 Guardar Datos de Contacto
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Info del Sistema -->
+                    <div class="data-card glass-panel card-padded">
+                        <h3 class="card-title">Acerca de</h3>
+                        <div class="about-section">
+                            <p><strong>Gestor FFEOE -  IES HLANZ</strong></p>
+                                <p><strong>Creado por:</strong> <i>Marcos Aragón, Juan Caballero y Pedro González</i></p>                                
+                                    <p><strong>Versión:</strong> 1.0.0 <b>BETA</b></p>
+                                <p><strong>Tecnología:</strong> FastAPI + SQLAlchemy (Backend) / Vanilla JS (Frontend)</p>
+                            <p>Proyecto desarrollado con el propósito de la optimización de asignaciones a prácticas de FCT y seguimiento del alumnado en ciclos de formación profesional.</p>
+                        </div>
+                    </div>
             </div>
     </div>
     </div>
@@ -879,6 +881,65 @@
                     <button type="button" class="btn btn-secondary" id="btn-cancelar-empresa">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="btn-guardar-empresa">Guardar Empresa</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Gestionar Contactos / Tutores Adicionales -->
+    <div class="modal-overlay" id="modal-gestionar-tutores">
+        <div class="modal-box glass-panel" style="max-width: 650px; width: 90%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Gestionar Personas de Contacto - <span id="mgt-empresa-nombre" style="color: var(--accent-blue);"></span></h3>
+                <button type="button" class="btn-close-modal" id="btn-close-gestionar-tutores" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);">✕</button>
+            </div>
+            
+            <!-- Listado existente -->
+            <div style="margin-bottom: 20px;">
+                <p style="font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Contactos Adicionales Registrados</p>
+                <div style="max-height: 180px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                    <table class="data-table" style="margin: 0; font-size: 0.88rem; width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.05); text-align: left;">
+                                <th style="padding: 10px;">Nombre</th>
+                                <th style="padding: 10px;">Email</th>
+                                <th style="padding: 10px;">Teléfono</th>
+                                <th style="padding: 10px;">DNI</th>
+                                <th style="padding: 10px;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mgt-tutores-tbody">
+                            <!-- Rellenado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>  
+            </div>
+
+            <!-- Formulario para añadir uno nuevo -->
+            <form id="form-nuevo-tutor" style="display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+                <input type="hidden" id="mgt-empresa-id">
+                <p style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin: 0;">Añadir Persona de Contacto Adicional</p>
+                <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="mgt-nombre" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Nombre Completo *</label>
+                        <input type="text" id="mgt-nombre" required placeholder="Ej: Juan Pérez" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                    <div class="form-group">
+                        <label for="mgt-dni" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">DNI</label>
+                        <input type="text" id="mgt-dni" placeholder="Ej: 12345678A" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                </div>
+                <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="mgt-email" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Email</label>
+                        <input type="email" id="mgt-email" placeholder="juan@empresa.com" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                    <div class="form-group">
+                        <label for="mgt-telefono" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Teléfono</label>
+                        <input type="text" id="mgt-telefono" placeholder="Ej: 611223344" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                </div>
+                <div class="error-message" id="mgt-form-error" style="color: var(--error-red); font-size: 0.85rem;"></div>
+                <button type="submit" class="btn btn-primary" style="align-self: flex-end; margin-top: 5px; padding: 10px 20px; background: var(--accent-blue); border: none; border-radius: var(--radius-sm); color: #fff; cursor: pointer; font-weight: 500;">👤 Añadir Personal</button>
             </form>
         </div>
     </div>
@@ -1126,14 +1187,14 @@
 
     <!-- Modal: Asignación de Tutores al asignar Plaza FCT -->
     <div class="modal-overlay" id="modal-asignar-tutors">
-        <div class="modal-box glass-panel modal-md">
+        <div class="modal-box glass-panel modal-md modal-box-overflow-visible">
             <div class="modal-header"
                 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 class="modal-title" style="font-size: 1.25rem; font-weight: 600;">Asignar Tutores FCT</h3>
                 <button type="button" class="btn-close-modal" id="btn-close-asignar-tutors"
                     style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);">✕</button>
             </div>
-            <form id="form-asignar-tutors" style="display: flex; flex-direction: column; gap: 16px;">
+            <form id="form-asignar-tutors" style="display: flex; flex-direction: column; gap: 16px; overflow: visible;">
                 <input type="hidden" id="at-alumno-id">
                 <input type="hidden" id="at-empresa-id">
 
@@ -1155,12 +1216,19 @@
                     </select>
                 </div>
 
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
-                    <label for="at-tutor-laboral"
-                        style="font-size: 0.9rem; font-weight: 500; color: var(--text-primary);">🏢 Tutor Laboral (de la
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; position: relative;">
+                    <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-primary);">🏢 Tutor Laboral (de la
                         empresa)</label>
-                    <input type="text" id="at-tutor-laboral" required placeholder="Nombre completo del tutor laboral"
-                        style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); font-family: inherit; font-size: 0.95rem;">
+                    <input type="hidden" id="at-tutor-laboral">
+                    <div class="custom-dropdown" id="at-tutor-laboral-wrapper">
+                        <div class="custom-dropdown-trigger" id="at-tutor-laboral-trigger" tabindex="0">
+                            <span id="at-tutor-laboral-display" class="custom-dropdown-trigger-text placeholder">-- Selecciona Tutor Laboral --</span>
+                            <span class="custom-dropdown-arrow">▾</span>
+                        </div>
+                        <div class="custom-dropdown-list" id="at-tutor-laboral-options">
+                            <!-- Cargado dinámicamente con contactos de empresas -->
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer"
@@ -1248,7 +1316,7 @@
                 <div class="logo-icon login-header-logo-icon">
                     <span class="material-symbols-outlined login-header-logo-symbol-blue">school</span>
                 </div>
-                <h2>Gestión FFOE</h2>
+                <h2>Gestión FFEOE</h2>
                 <p>Inicia sesión para acceder al sistema</p>
             </div>
             <form id="login-form">

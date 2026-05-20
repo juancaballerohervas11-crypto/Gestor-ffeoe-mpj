@@ -79,6 +79,19 @@ class Empresa(Base):
         back_populates="empresa",
         cascade="all, delete-orphan"
     )
+    tutores = relationship("TutorLaboral", back_populates="empresa", cascade="all, delete-orphan")
+
+class TutorLaboral(Base):
+    __tablename__ = "tutores_laborales"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
+    telefono = Column(String(30), nullable=True)
+    dni = Column(String(20), nullable=True)
+    empresa_id = Column(Integer, ForeignKey("empresas.id", ondelete="CASCADE"), nullable=False)
+
+    empresa = relationship("Empresa", back_populates="tutores")
 
 class Alumno(Base):
     __tablename__ = "alumnos"
@@ -108,10 +121,27 @@ class Alumno(Base):
 
     tutor_docente = relationship("User", foreign_keys=[tutor_docente_id])
     profesor = relationship("User", back_populates="alumnos_registrados", foreign_keys=[registrado_por])
+    
+    # Relación con el historial de prácticas académicas reales del alumno
+    historial_practicas = relationship("HistorialPractica", back_populates="alumno", cascade="all, delete-orphan")
 
     @property
     def empresa_nombre(self):
         return self.empresa_asignada.nombre if self.empresa_asignada else None
+
+
+class HistorialPractica(Base):
+    __tablename__ = "historial_practicas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    alumno_id = Column(Integer, ForeignKey("alumnos.id", ondelete="CASCADE"), nullable=False)
+    curso = Column(String(100), nullable=False)
+    tipo = Column(String(100), nullable=False)
+    empresa = Column(String(255), nullable=False)
+    horas = Column(Integer, nullable=False, default=380)
+    resultado = Column(String(50), nullable=False, default="APTO")
+
+    alumno = relationship("Alumno", back_populates="historial_practicas")
 
 
 
