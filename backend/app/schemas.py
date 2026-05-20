@@ -48,6 +48,24 @@ class TokenData(BaseModel):
 
 
 
+# ESQUEMAS DE TUTOR LABORAL
+
+class TutorLaboralBase(BaseModel):
+    nombre: str
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+    dni: Optional[str] = None
+
+class TutorLaboralCreate(TutorLaboralBase):
+    pass
+
+class TutorLaboralOut(TutorLaboralBase):
+    id: int
+    empresa_id: int
+
+    class Config:
+        from_attributes = True
+
 # ESQUEMA DE EMPRESA 
 
 class EmpresaOut(BaseModel):
@@ -71,6 +89,8 @@ class EmpresaOut(BaseModel):
 
     # Campo heredado
     contacto: Optional[str] = None
+
+    tutores: List[TutorLaboralOut] = []
 
     class Config:
         from_attributes = True

@@ -2,9 +2,12 @@
 import { abrirModalPerfil } from './perfil.js';
 import { loadPlazasData, initPlazasEvents } from './plazas.js';
 
-const API_BASE_URL = 'http://192.168.1.142:8000'; // Asegúrate de que el backend esté corriendo en este puerto
 
-// Variables de estado global
+
+
+const hostname = window.location.hostname || 'localhost';
+const protocol = window.location.protocol;
+const API_BASE_URL = `${protocol}//${hostname}:8000`; // Asegúrate de que el backend esté en este puerto y la ip sea la IPv4 del host de la aplicación
 let currentUserRole = null;
 let currentUserEmail = null;
 let allAlumnos = [];
@@ -113,6 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-cancelar-importar-empresas').addEventListener('click', () => closeModal('modal-importar-empresas'));
     document.getElementById('form-importar-empresas').addEventListener('submit', importarEmpresasCSV);
     document.getElementById('empresas-buscar').addEventListener('input', filtrarEmpresasTabla);
+
+    // Tutores Adicionales
+    document.getElementById('btn-close-gestionar-tutores').addEventListener('click', () => closeModal('modal-gestionar-tutores'));
+    document.getElementById('form-nuevo-tutor').addEventListener('submit', guardarNuevoTutor);
 
     // Profesores buttons
     document.getElementById('btn-nuevo-profesor').addEventListener('click', () => abrirModalProfesor());
@@ -1704,6 +1711,7 @@ function renderEmpresasTabla(empresas) {
             <td><span class="plazas-badge">${empresa.plazas_totales} plazas</span></td>
             <td class="table-actions">
                 <button class="btn btn-secondary btn-table btn-table-info" onclick="abrirBitacoraEmpresa(${empresa.id}, '${empresa.nombre}')">📞 Bitácora</button>
+                <button class="btn btn-secondary btn-table btn-table-info" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); color: #a78bfa;" onclick="abrirModalTutores(${empresa.id}, '${empresa.nombre.replace(/'/g, "\\'")}')">👥 Contactos</button>
                 <button class="btn btn-secondary btn-table" onclick="abrirModalEmpresa(${empresa.id}, '${empresa.nombre}', '${empresa.cif}', '', ${empresa.plazas_totales}, '${empresa.direccion || ''}', '${empresa.web || ''}', '${empresa.email || ''}', '${empresa.telefono || ''}', '${empresa.contacto_nombre || ''}', '${empresa.contacto_email || ''}', '${empresa.contacto_telefono || ''}', '${empresa.contacto_dni || ''}')">&#9998; Editar</button>
                 <button class="btn btn-secondary btn-table btn-table-danger" onclick="eliminarEmpresa(${empresa.id})">🗑️ Borrar</button>
             </td>
@@ -2318,3 +2326,132 @@ async function guardarConfigPerfil(e) {
         if (errorEl) errorEl.textContent = error.message;
     }
 }
+
+// ========================================================
+// FUNCIONES DE GESTIÓN DE TUTORES LABORALES ADICIONALES
+// ========================================================
+
+async function abrirModalTutores(empresaId, empresaNombre) {
+    document.getElementById('mgt-empresa-id').value = empresaId;
+    document.getElementById('mgt-empresa-nombre').textContent = empresaNombre;
+    
+    // Limpiar formulario y errores
+    document.getElementById('form-nuevo-tutor').reset();
+    document.getElementById('mgt-form-error').textContent = '';
+    
+    // Cargar listado
+    await cargarTutoresEmpresa(empresaId);
+    
+    openModal('modal-gestionar-tutores');
+}
+
+async function cargarTutoresEmpresa(empresaId) {
+    const tbody = document.getElementById('mgt-tutores-tbody');
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--text-secondary); padding: 16px;">Cargando contactos...</td></tr>`;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/empresas/${empresaId}/tutores`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        const tutores = response.ok ? await response.json() : [];
+        tbody.innerHTML = '';
+        
+        if (tutores.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--text-muted); padding: 16px;">No hay personas de contacto adicionales registradas.</td></tr>`;
+            return;
+        }
+        
+        tutores.forEach(tutor => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="padding: 10px; border-bottom: 1px solid var(--border-glass);"><strong>${tutor.nombre}</strong></td>
+                <td style="padding: 10px; border-bottom: 1px solid var(--border-glass);">${tutor.email || '-'}</td>
+                <td style="padding: 10px; border-bottom: 1px solid var(--border-glass);">${tutor.telefono || '-'}</td>
+                <td style="padding: 10px; border-bottom: 1px solid var(--border-glass); font-family: monospace;">${tutor.dni || '-'}</td>
+                <td style="padding: 10px; border-bottom: 1px solid var(--border-glass);">
+                    <button type="button" class="btn btn-secondary btn-table btn-table-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="eliminarTutorLaboral(${tutor.id}, ${empresaId})">🗑️ Borrar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (error) {
+        console.error(error);
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--error-red); padding: 16px;">Error al cargar contactos.</td></tr>`;
+    }
+}
+
+async function guardarNuevoTutor(event) {
+    event.preventDefault();
+    const empresaId = document.getElementById('mgt-empresa-id').value;
+    const nombre = document.getElementById('mgt-nombre').value.trim();
+    const dni = document.getElementById('mgt-dni').value.trim() || null;
+    const email = document.getElementById('mgt-email').value.trim() || null;
+    const telefono = document.getElementById('mgt-telefono').value.trim() || null;
+    const errorEl = document.getElementById('mgt-form-error');
+    
+    errorEl.textContent = '';
+    
+    if (!nombre) {
+        errorEl.textContent = 'El nombre es obligatorio.';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/empresas/${empresaId}/tutores`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ nombre, dni, email, telefono })
+        });
+        
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.detail || 'Error al añadir el contacto.');
+        }
+        
+        // Recargar el listado
+        document.getElementById('form-nuevo-tutor').reset();
+        await cargarTutoresEmpresa(empresaId);
+        
+        // Recargar también la lista principal de empresas (para mantener datos sincronizados)
+        await cargarEmpresas();
+    } catch (error) {
+        console.error(error);
+        errorEl.textContent = error.message;
+    }
+}
+
+async function eliminarTutorLaboral(tutorId, empresaId) {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta persona de contacto?')) return;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/empresas/tutores/${tutorId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error al eliminar el contacto.');
+        }
+        
+        // Recargar listado
+        await cargarTutoresEmpresa(empresaId);
+        // Recargar empresas para actualizar la lista global
+        await cargarEmpresas();
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+// Bind to window to guarantee global availability in onclick handlers
+window.abrirModalTutores = abrirModalTutores;
+window.eliminarTutorLaboral = eliminarTutorLaboral;
+window.guardarNuevoTutor = guardarNuevoTutor;

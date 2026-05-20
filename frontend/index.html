@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" href="./images/logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gestión FFOE</title>
+    <title>Dashboard - Gestión FFEOE</title>
     <meta name="description"
         content="Dashboard principal del Sistema de Gestión de prácticas para alumnado de Formación Profesional.">
 
@@ -27,7 +27,7 @@
             <div class="sidebar-header">
                 <div class="logo-container">
                     <div class="logo-icon"><img src="./images/logo.png" alt=""></div>
-                    <h1>Gestor <span>FFOE</span></h1>
+                    <h1>Gestor <span>FFEOE</span></h1>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -624,7 +624,7 @@
                         <div class="data-card glass-panel card-padded">
                             <h3 class="card-title">Acerca de la Plataforma</h3>
                             <div class="about-section">
-                                <p><strong>Plataforma:</strong> Gestor FFOE - HLANZ</p>
+                                <p><strong>Plataforma:</strong> Gestor FFEOE - HLANZ</p>
                                 <p><strong>Versión:</strong> 1.0.0</p>
                                 <p><strong>Tecnología:</strong> FastAPI + SQLAlchemy (Backend) / Vanilla Web Standards
                                     (Frontend)</p>
@@ -892,6 +892,65 @@
         </div>
     </div>
 
+    <!-- Modal: Gestionar Contactos / Tutores Adicionales -->
+    <div class="modal-overlay" id="modal-gestionar-tutores">
+        <div class="modal-box glass-panel" style="max-width: 650px; width: 90%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin: 0;">Gestionar Personas de Contacto - <span id="mgt-empresa-nombre" style="color: var(--accent-blue);"></span></h3>
+                <button type="button" class="btn-close-modal" id="btn-close-gestionar-tutores" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);">✕</button>
+            </div>
+            
+            <!-- Listado existente -->
+            <div style="margin-bottom: 20px;">
+                <p style="font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Contactos Adicionales Registrados</p>
+                <div style="max-height: 180px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                    <table class="data-table" style="margin: 0; font-size: 0.88rem; width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.05); text-align: left;">
+                                <th style="padding: 10px;">Nombre</th>
+                                <th style="padding: 10px;">Email</th>
+                                <th style="padding: 10px;">Teléfono</th>
+                                <th style="padding: 10px;">DNI</th>
+                                <th style="padding: 10px;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mgt-tutores-tbody">
+                            <!-- Rellenado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>  
+            </div>
+
+            <!-- Formulario para añadir uno nuevo -->
+            <form id="form-nuevo-tutor" style="display: flex; flex-direction: column; gap: 14px; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+                <input type="hidden" id="mgt-empresa-id">
+                <p style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin: 0;">Añadir Persona de Contacto Adicional</p>
+                <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="mgt-nombre" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Nombre Completo *</label>
+                        <input type="text" id="mgt-nombre" required placeholder="Ej: Juan Pérez" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                    <div class="form-group">
+                        <label for="mgt-dni" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">DNI</label>
+                        <input type="text" id="mgt-dni" placeholder="Ej: 12345678A" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                </div>
+                <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="mgt-email" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Email</label>
+                        <input type="email" id="mgt-email" placeholder="juan@empresa.com" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                    <div class="form-group">
+                        <label for="mgt-telefono" style="display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-secondary);">Teléfono</label>
+                        <input type="text" id="mgt-telefono" placeholder="Ej: 611223344" class="input-full" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); box-sizing: border-box;">
+                    </div>
+                </div>
+                <div class="error-message" id="mgt-form-error" style="color: var(--error-red); font-size: 0.85rem;"></div>
+                <button type="submit" class="btn btn-primary" style="align-self: flex-end; margin-top: 5px; padding: 10px 20px; background: var(--accent-blue); border: none; border-radius: var(--radius-sm); color: #fff; cursor: pointer; font-weight: 500;">👤 Añadir Personal</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Importar Empresas por CSV -->
     <div class="modal-overlay" id="modal-importar-empresas">
         <div class="modal-box glass-panel" style="max-width: 480px; width: 90%;">
@@ -1135,14 +1194,14 @@
 
     <!-- Modal: Asignación de Tutores al asignar Plaza FCT -->
     <div class="modal-overlay" id="modal-asignar-tutors">
-        <div class="modal-box glass-panel modal-md">
+        <div class="modal-box glass-panel modal-md modal-box-overflow-visible">
             <div class="modal-header"
                 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 class="modal-title" style="font-size: 1.25rem; font-weight: 600;">Asignar Tutores FCT</h3>
                 <button type="button" class="btn-close-modal" id="btn-close-asignar-tutors"
                     style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-secondary);">✕</button>
             </div>
-            <form id="form-asignar-tutors" style="display: flex; flex-direction: column; gap: 16px;">
+            <form id="form-asignar-tutors" style="display: flex; flex-direction: column; gap: 16px; overflow: visible;">
                 <input type="hidden" id="at-alumno-id">
                 <input type="hidden" id="at-empresa-id">
 
@@ -1164,12 +1223,19 @@
                     </select>
                 </div>
 
-                <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
-                    <label for="at-tutor-laboral"
-                        style="font-size: 0.9rem; font-weight: 500; color: var(--text-primary);">🏢 Tutor Laboral (de la
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 8px; position: relative;">
+                    <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-primary);">🏢 Tutor Laboral (de la
                         empresa)</label>
-                    <input type="text" id="at-tutor-laboral" required placeholder="Nombre completo del tutor laboral"
-                        style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); font-family: inherit; font-size: 0.95rem;">
+                    <input type="hidden" id="at-tutor-laboral">
+                    <div class="custom-dropdown" id="at-tutor-laboral-wrapper">
+                        <div class="custom-dropdown-trigger" id="at-tutor-laboral-trigger" tabindex="0">
+                            <span id="at-tutor-laboral-display" class="custom-dropdown-trigger-text placeholder">-- Selecciona Tutor Laboral --</span>
+                            <span class="custom-dropdown-arrow">▾</span>
+                        </div>
+                        <div class="custom-dropdown-list" id="at-tutor-laboral-options">
+                            <!-- Cargado dinámicamente con contactos de empresas -->
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer"
@@ -1257,7 +1323,7 @@
                 <div class="logo-icon login-header-logo-icon">
                     <span class="material-symbols-outlined login-header-logo-symbol-blue">school</span>
                 </div>
-                <h2>Gestión FFOE</h2>
+                <h2>Gestión FFEOE</h2>
                 <p>Inicia sesión para acceder al sistema</p>
             </div>
             <form id="login-form">

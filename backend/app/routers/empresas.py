@@ -128,3 +128,36 @@ def obtener_contactos_empresa(
 ):
     utils.empresa_existe(db, empresa_id)
     return db.query(models.ContactoEmpresa).filter(models.ContactoEmpresa.empresa_id == empresa_id).all()
+
+#   GESTIÓN DE TUTORES LABORALES ADICIONALES
+
+@router.get("/{empresa_id}/tutores", response_model=List[schemas.TutorLaboralOut])
+def listar_tutores_de_empresa(empresa_id: int, db: Session = Depends(get_db)):
+    utils.empresa_existe(db, empresa_id)
+    return db.query(models.TutorLaboral).filter(models.TutorLaboral.empresa_id == empresa_id).all()
+
+@router.post("/{empresa_id}/tutores", response_model=schemas.TutorLaboralOut, status_code=201)
+def crear_tutor_para_empresa(
+    empresa_id: int,
+    tutor: schemas.TutorLaboralCreate,
+    db: Session = Depends(get_db),
+    _ = Depends(permiso_admin_prof)
+):
+    utils.empresa_existe(db, empresa_id)
+    new_tutor = models.TutorLaboral(**tutor.model_dump(), empresa_id=empresa_id)
+    db.add(new_tutor)
+    db.commit()
+    db.refresh(new_tutor)
+    return new_tutor
+
+@router.delete("/tutores/{tutor_id}", status_code=204)
+def eliminar_tutor(
+    tutor_id: int,
+    db: Session = Depends(get_db),
+    _ = Depends(permiso_admin_prof)
+):
+    tutor = db.query(models.TutorLaboral).filter(models.TutorLaboral.id == tutor_id).first()
+    if not tutor:
+        raise HTTPException(status_code=404, detail="El tutor no existe")
+    db.delete(tutor)
+    db.commit()

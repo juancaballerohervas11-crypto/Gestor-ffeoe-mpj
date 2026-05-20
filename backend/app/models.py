@@ -79,6 +79,19 @@ class Empresa(Base):
         back_populates="empresa",
         cascade="all, delete-orphan"
     )
+    tutores = relationship("TutorLaboral", back_populates="empresa", cascade="all, delete-orphan")
+
+class TutorLaboral(Base):
+    __tablename__ = "tutores_laborales"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
+    telefono = Column(String(30), nullable=True)
+    dni = Column(String(20), nullable=True)
+    empresa_id = Column(Integer, ForeignKey("empresas.id", ondelete="CASCADE"), nullable=False)
+
+    empresa = relationship("Empresa", back_populates="tutores")
 
 class Alumno(Base):
     __tablename__ = "alumnos"

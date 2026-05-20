@@ -114,10 +114,14 @@ def asignar_alumno_a_empresa(
     # Set workplace tutor details
     if tutor_laboral_nombre:
         alumno.tutor_laboral_nombre = tutor_laboral_nombre
-        # If they match the company's contact name, let's copy their details
+        # If they match the company's main contact or any of the additional tutors, copy details
+        tutor_adicional = next((t for t in empresa.tutores if t.nombre == tutor_laboral_nombre), None)
         if empresa.contacto_nombre == tutor_laboral_nombre:
             alumno.tutor_laboral_dni = empresa.contacto_dni
             alumno.tutor_laboral_contacto = f"{empresa.contacto_email or ''} | {empresa.contacto_telefono or ''}".strip(" | ")
+        elif tutor_adicional:
+            alumno.tutor_laboral_dni = tutor_adicional.dni
+            alumno.tutor_laboral_contacto = f"{tutor_adicional.email or ''} | {tutor_adicional.telefono or ''}".strip(" | ")
         else:
             alumno.tutor_laboral_dni = None
             alumno.tutor_laboral_contacto = None

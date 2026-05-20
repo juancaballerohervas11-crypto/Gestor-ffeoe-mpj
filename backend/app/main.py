@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from . import models, auth_tokens
 from .database import get_db
 from fastapi.openapi.docs import get_swagger_ui_html
+import socket
 
 
 #   CREACIÓN DE TABLAS
@@ -119,25 +120,40 @@ async def custom_swagger_ui_html():
         swagger_ui_parameters={"persistAuthorization": True}
     )
 
-
-
-
-
-
 #   CONFIGURACIÓN DE CORS
+
+import socket
+
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # No requiere conexión real a internet
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+local_ip = get_local_ip()
 
 app.add_middleware(
     CORSMiddleware,
-    # El puerto 5173 es el predeterminado de Vite para el frontend
-    # El puerto 5500/5501 es el de VS Code Live Server
     allow_origins=[
-    "http://192.168.1.142:5173",
-    "http://localhost:5173",      
-    "http://localhost:5500",
-    "http://localhost:5501",
-    "http://localhost:8000",
-    "http://192.168.1.142",
-],
+        f"http://{local_ip}:5173",
+        f"http://{local_ip}:5500",
+        f"http://{local_ip}:5501",
+        f"http://{local_ip}",
+        "http://localhost:5173",      
+        "http://localhost:5500",
+        "http://localhost:5501",
+        "http://localhost:8000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5500",
+        "http://127.0.0.1:5501",
+        "http://127.0.0.1:8000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],
