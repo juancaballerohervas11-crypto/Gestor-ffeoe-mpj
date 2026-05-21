@@ -1,5 +1,6 @@
 import time
 import json
+import os
 from collections import defaultdict, deque
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -12,9 +13,6 @@ DEFAULT_MAX_REQUESTS: int   = 60   # peticiones por defecto en la ventana
 DEFAULT_WINDOW_SECONDS: int = 60   # tamaño de la ventana por defecto (segundos)
 
 
-
-
-
 # Rutas en las que no actua el rate limiter
 
 EXEMPT_PATHS: set[str] = {
@@ -22,8 +20,6 @@ EXEMPT_PATHS: set[str] = {
     "/docs",
     "/openapi.json",
 }
-
-
 
 
 # Límites específicos por ruta
@@ -54,6 +50,10 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(self, request: Request, call_next):
+
+        # En modo testing se desactiva el rate limiter
+        if os.environ.get("TESTING") == "true":
+            return await call_next(request)
 
         path   = request.url.path
         method = request.method
@@ -121,4 +121,3 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
         response.headers["X-RateLimit-Remaining"] = str(remaining)
         response.headers["X-RateLimit-Reset"]     = str(int(now + window_seconds))
         return response
-

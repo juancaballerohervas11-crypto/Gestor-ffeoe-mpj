@@ -143,26 +143,19 @@ def get_local_ip():
 
 local_ip = get_local_ip()
 
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        f"http://{local_ip}:5173",
-        f"http://{local_ip}:5500",
-        f"http://{local_ip}:5501",
-        f"http://{local_ip}",
-        "http://localhost:5173",      
-        "http://localhost:5500",
-        "http://localhost:5501",
-        "http://localhost:8000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5500",
-        "http://127.0.0.1:5501",
-        "http://127.0.0.1:8000",
-    ],
+    allow_origins=["*"], 
     allow_credentials=True,
-    allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+
+
 
 # Rate Limiter: límites por ruta configurados en rate_limiter.py
 # - Login:         5 req/min   (anti fuerza bruta)

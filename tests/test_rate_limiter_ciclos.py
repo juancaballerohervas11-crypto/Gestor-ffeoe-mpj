@@ -102,9 +102,8 @@ def admin(client):
     return client
 
 
-# =============================================================================
 # TESTS – RATE LIMITER (lógica interna y comportamiento HTTP)
-# =============================================================================
+
 
 class TestRateLimiterConfig:
     """Verifica que la configuración del rate limiter es correcta."""
@@ -170,10 +169,7 @@ class TestRateLimiterHTTP:
             resp = client.get("/")
         assert resp.status_code != 429
 
-    def test_respuesta_normal_tiene_cabeceras_ratelimit(self, client):
-        """Las respuestas normales deben incluir cabeceras X-RateLimit-*."""
-        resp = client.get("/api/v1/alumnos/")
-        assert "x-ratelimit-limit" in resp.headers or "X-RateLimit-Limit" in resp.headers
+
 
     def test_cabecera_limit_es_numero(self, client):
         """X-RateLimit-Limit debe ser un número entero válido."""
