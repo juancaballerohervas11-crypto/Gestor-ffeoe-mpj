@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from . import models, auth_tokens
 from .database import get_db
 from fastapi.openapi.docs import get_swagger_ui_html
+from .rate_limiter import RateLimiterMiddleware
 import socket
 
 
@@ -102,7 +103,8 @@ app = FastAPI(
     title="Sistema de Gestión FFOE",
     description="API de Gestión de prácticas para alumnado de Formación Profesional.",
     version="1.0.0",
-    swagger_ui_parameters={"persistAuthorization": True} 
+    redoc_url=None,
+    swagger_ui_parameters={"persistAuthorization": True}
     )
 
 
@@ -158,6 +160,13 @@ app.add_middleware(
     allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],
 )
+
+# Rate Limiter: límites por ruta configurados en rate_limiter.py
+# - Login:         5 req/min   (anti fuerza bruta)
+# - Registro:     10 req/min   (anti registro masivo)
+# - Importar CSV: 100 req/min  (carga de ficheros)
+# - Resto:        60 req/min   (uso general)
+app.add_middleware(RateLimiterMiddleware)
 
 
 

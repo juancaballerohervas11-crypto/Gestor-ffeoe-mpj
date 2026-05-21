@@ -303,6 +303,85 @@ function setupPlazasSearch() {
     });
 }
 
+// Actualizar el display de información del tutor laboral seleccionado
+function actualizarTutorLaboralInfo(nombreTutor, empresaId) {
+    const infoDisplay = document.getElementById('at-tutor-laboral-info-display');
+    if (!infoDisplay) return;
+
+    if (!nombreTutor || nombreTutor === '-- Selecciona Tutor Laboral --') {
+        infoDisplay.style.display = 'none';
+        infoDisplay.innerHTML = '';
+        return;
+    }
+
+    // Buscar empresa
+    const empIdInt = parseInt(empresaId);
+    const empresa = plazasEmpresas.find(e => e.id === empIdInt);
+    
+    let tutorInfo = null;
+
+    if (empresa) {
+        // 1. ¿Es el contacto principal de la empresa?
+        const isPrimary = (empresa.contacto_nombre && empresa.contacto_nombre.trim() === nombreTutor.trim()) || 
+                          (empresa.contacto && empresa.contacto.trim() === nombreTutor.trim());
+        if (isPrimary) {
+            tutorInfo = {
+                nombre: empresa.contacto_nombre || empresa.contacto || nombreTutor,
+                email: empresa.contacto_email || empresa.email || null,
+                telefono: empresa.contacto_telefono || empresa.telefono || null,
+                dni: empresa.contacto_dni || null,
+                tipo: 'Contacto Principal'
+            };
+        } else if (empresa.tutores && Array.isArray(empresa.tutores)) {
+            // 2. ¿Es uno de los tutores adicionales?
+            const foundTutor = empresa.tutores.find(t => t.nombre && t.nombre.trim() === nombreTutor.trim());
+            if (foundTutor) {
+                tutorInfo = {
+                    nombre: foundTutor.nombre,
+                    email: foundTutor.email,
+                    telefono: foundTutor.telefono,
+                    dni: foundTutor.dni,
+                    tipo: 'Personal / Tutor'
+                };
+            }
+        }
+    }
+
+    // Si es un tutor personalizado creado en el acto (no guardado en empresa)
+    if (!tutorInfo) {
+        tutorInfo = {
+            nombre: nombreTutor,
+            email: null,
+            telefono: null,
+            dni: null,
+            tipo: 'Personalizado'
+        };
+    }
+
+    // Renderizar display
+    infoDisplay.style.display = 'flex';
+    infoDisplay.style.flexDirection = 'column';
+    infoDisplay.style.gap = '6px';
+    infoDisplay.style.background = 'rgba(255, 255, 255, 0.04)';
+    infoDisplay.style.border = '1px solid rgba(255, 255, 255, 0.12)';
+    infoDisplay.style.borderRadius = 'var(--radius-sm)';
+    infoDisplay.style.padding = '12px';
+
+    infoDisplay.innerHTML = `
+        <div style="font-weight: 600; color: var(--accent-blue); display: flex; align-items: center; gap: 6px; font-size: 0.9rem;">
+            <span>👤</span> ${tutorInfo.nombre}
+            <span style="font-size: 0.72rem; font-weight: 600; background: rgba(59, 130, 246, 0.15); color: #93c5fd; padding: 2px 8px; border-radius: 20px; margin-left: auto;">
+                ${tutorInfo.tipo}
+            </span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 4px; font-size: 0.8rem; color: var(--text-secondary);">
+            <div><strong>🪪 DNI:</strong> <span style="font-family: monospace;">${tutorInfo.dni || 'No disponible'}</span></div>
+            <div><strong>📧 Email:</strong> ${tutorInfo.email || 'No disponible'}</div>
+            <div><strong>📞 Tel:</strong> ${tutorInfo.telefono || 'No disponible'}</div>
+        </div>
+    `;
+}
+
 // Abrir el Modal de Asignación de Tutores
 function abrirModalTutorAsignacion(alumnoId, alumnoNombre, empresaId, empresaNombre, contactoNombre) {
     document.getElementById('at-alumno-id').value = alumnoId;
@@ -321,6 +400,13 @@ function abrirModalTutorAsignacion(alumnoId, alumnoNombre, empresaId, empresaNom
     displayEl.classList.add('placeholder');
     hiddenInput.value = '';
     wrapper.classList.remove('open');
+
+    // Resetear display de info
+    const infoDisplay = document.getElementById('at-tutor-laboral-info-display');
+    if (infoDisplay) {
+        infoDisplay.style.display = 'none';
+        infoDisplay.innerHTML = '';
+    }
 
     // Helper para añadir items al dropdown
     function addItem(value, text, isSelected = false, extraClass = '') {
@@ -360,6 +446,9 @@ function abrirModalTutorAsignacion(alumnoId, alumnoNombre, empresaId, empresaNom
     if (currentContacto) {
         addItem(currentContacto, `⭐ ${currentContacto} (Contacto de esta empresa)`, true);
         contactosUnicos.delete(currentContacto);
+        actualizarTutorLaboralInfo(currentContacto, empresaId);
+    } else {
+        actualizarTutorLaboralInfo('', empresaId);
     }
 
     // El resto de contactos
@@ -413,6 +502,17 @@ function cerrarModalTutors() {
     if (hiddenInput) hiddenInput.value = '';
     const displayEl = document.getElementById('at-tutor-laboral-display');
     if (displayEl) { displayEl.textContent = '-- Selecciona Tutor Laboral --'; displayEl.classList.add('placeholder'); }
+    
+    // Resetear horas al valor por defecto
+    const horasInput = document.getElementById('at-horas-practicas');
+    if (horasInput) horasInput.value = 380;
+
+    // Ocultar y limpiar el display de info del tutor
+    const infoDisplay = document.getElementById('at-tutor-laboral-info-display');
+    if (infoDisplay) {
+        infoDisplay.style.display = 'none';
+        infoDisplay.innerHTML = '';
+    }
 }
 
 // Registrar eventos del modal al inicializar
@@ -443,6 +543,8 @@ export function initPlazasEvents() {
         const item = e.target.closest('.custom-dropdown-item');
         if (!item || !item.dataset.value) return;
 
+        const empresaId = document.getElementById('at-empresa-id').value;
+
         if (item.dataset.value === 'OTRO') {
             laboralWrapper.classList.remove('open');
             const nuevoTutor = prompt('Introduce el nombre del tutor laboral:');
@@ -450,6 +552,7 @@ export function initPlazasEvents() {
                 laboralHidden.value = nuevoTutor.trim();
                 laboralDisplay.textContent = nuevoTutor.trim();
                 laboralDisplay.classList.remove('placeholder');
+                actualizarTutorLaboralInfo(nuevoTutor.trim(), empresaId);
             }
         } else {
             laboralHidden.value = item.dataset.value;
@@ -458,6 +561,7 @@ export function initPlazasEvents() {
             laboralOptions.querySelectorAll('.custom-dropdown-item').forEach(i => i.classList.remove('selected'));
             item.classList.add('selected');
             laboralWrapper.classList.remove('open');
+            actualizarTutorLaboralInfo(item.dataset.value, empresaId);
         }
     });
 
@@ -476,13 +580,14 @@ export function initPlazasEvents() {
         const empresaId = document.getElementById('at-empresa-id').value;
         const docenteId = document.getElementById('at-tutor-docente').value;
         const laboralNombre = document.getElementById('at-tutor-laboral').value;
+        const horas = parseInt(document.getElementById('at-horas-practicas').value) || 380;
 
         // Armar URL con query params opcionales
         let url = `${API_BASE_URL}/api/v1/asignaciones/${alumnoId}/${empresaId}`;
-        const params = [];
+        const params = [`horas=${horas}`];
         if (docenteId) params.push(`tutor_docente_id=${docenteId}`);
         if (laboralNombre) params.push(`tutor_laboral_nombre=${encodeURIComponent(laboralNombre)}`);
-        if (params.length > 0) url += `?${params.join('&')}`;
+        url += `?${params.join('&')}`;
 
         try {
             const res = await fetch(url, {

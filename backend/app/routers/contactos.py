@@ -90,6 +90,7 @@ def asignar_alumno_a_empresa(
     empresa_id: int,
     tutor_docente_id: Optional[int] = None,
     tutor_laboral_nombre: Optional[str] = None,
+    horas: Optional[int] = 380,
     db: Session = Depends(get_db),
     _ = Depends(permiso_admin_prof)
 ):
@@ -141,7 +142,7 @@ def asignar_alumno_a_empresa(
         curso=curso_nombre,
         tipo="FCT / Dual",
         empresa=empresa.nombre,
-        horas=380,
+        horas=horas,
         resultado="APTO"
     )
     db.add(historial_entry)

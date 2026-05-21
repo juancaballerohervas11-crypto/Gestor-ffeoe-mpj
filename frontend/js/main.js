@@ -1711,7 +1711,7 @@ function renderEmpresasTabla(empresas) {
             <td><span class="plazas-badge">${empresa.plazas_totales} plazas</span></td>
             <td class="table-actions">
                 <button class="btn btn-secondary btn-table btn-table-info" onclick="abrirBitacoraEmpresa(${empresa.id}, '${empresa.nombre}')">📞 Bitácora</button>
-                <button class="btn btn-secondary btn-table btn-table-info" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); color: #a78bfa;" onclick="abrirModalTutores(${empresa.id}, '${empresa.nombre.replace(/'/g, "\\'")}')">👥 Contactos</button>
+                <button class="btn btn-secondary btn-table btn-table-info" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); color: #a78bfa;" onclick="abrirModalTutores(${empresa.id}, '${empresa.nombre.replace(/'/g, "\\'")}')">👥 Añadir Personal</button>
                 <button class="btn btn-secondary btn-table" onclick="abrirModalEmpresa(${empresa.id}, '${empresa.nombre}', '${empresa.cif}', '', ${empresa.plazas_totales}, '${empresa.direccion || ''}', '${empresa.web || ''}', '${empresa.email || ''}', '${empresa.telefono || ''}', '${empresa.contacto_nombre || ''}', '${empresa.contacto_email || ''}', '${empresa.contacto_telefono || ''}', '${empresa.contacto_dni || ''}')">&#9998; Editar</button>
                 <button class="btn btn-secondary btn-table btn-table-danger" onclick="eliminarEmpresa(${empresa.id})">🗑️ Borrar</button>
             </td>
