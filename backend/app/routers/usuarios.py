@@ -48,7 +48,7 @@ def login_para_obtener_access_token(
 def registrar_usuario(
     usuario: schemas.UserCreate,
     db: Session = Depends(get_db),
-    #_ = Depends(permiso_admin)
+    _ = Depends(permiso_admin)
 ):
     return services.registrar_usuario(db, usuario)
 
