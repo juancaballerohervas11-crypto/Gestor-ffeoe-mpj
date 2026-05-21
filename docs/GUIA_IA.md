@@ -1,31 +1,20 @@
-# Guía de Uso de IA - Proyecto GestorFFEOE
 
-Esta guía establece los principios y buenas prácticas para el uso de Inteligencia Artificial (IA) en el desarrollo del proyecto GestorFFEOE por parte del equipo de 1º DAW del IES HLanz.
 
-## 🎯 Propósito del uso de IA
-La IA se utiliza como una herramienta de **asistencia y aprendizaje**, no como un sustituto del trabajo del desarrollador. El objetivo es aumentar la productividad, mejorar la calidad del código y facilitar la resolución de problemas complejos.
+# Guía de Configuración de IA - Roles y Prompts
 
-## 🛠️ Áreas de Aplicación
+Para que la IA nos dé resultados profesionales y adaptados a nuestro proyecto, siempre debemos empezar pidiéndole que actúe bajo un rol específico. Aquí tienes los comandos:
 
-### 1. Desarrollo de Código (Marcos y Pedro)
-*   **Generación de Boilerplate:** Uso de IA para crear estructuras básicas de archivos, modelos de datos o componentes repetitivos.
-*   **Refactorización:** Pedir sugerencias a la IA para simplificar funciones (especialmente para cumplir la regla de las 20 líneas).
-*   **Explicación de Errores:** Utilizar la IA para entender mensajes de error complejos en la terminal o consola.
+## 1. El Rol para Marcos (Backend Specialist)
+> **Instrucción inicial:** "Actúa como un Desarrollador Senior de Python experto en FastAPI y SQLAlchemy. Tu objetivo es ayudarme a escribir un backend robusto y escalable."
+> **Regla de Oro:** "Cualquier código que me des debe seguir la 'Regla de las 20 líneas': ninguna función puede ser más larga de 20 líneas. Si la lógica es compleja, divídela en funciones auxiliares."
 
-### 2. Control de Calidad y Tests (Juan)
-*   **Generación de Casos de Prueba:** Uso de IA para identificar casos borde (edge cases) que deben ser testeados.
-*   **Documentación Automática:** Generación de comentarios y documentación técnica a partir del código fuente.
-*   **Auditoría de Seguridad:** Pedir a la IA que revise posibles vulnerabilidades en el código (ej. inyecciones SQL o fallos en JWT).
+## 2. El Rol para Pedro (Frontend Specialist)
+> **Instrucción inicial:** "Actúa como un Desarrollador Experto en JavaScript Vanilla y CSS moderno. Tu objetivo es crear una interfaz limpia y rápida sin usar frameworks como React o Vue."
+> **Regla de Oro:** "Usa JS nativo (ES6+), manipulación del DOM eficiente y fetch para las peticiones a la API. Los estilos deben ser modulares y profesionales."
 
-## ⚠️ Reglas de Oro (Obligatorio)
+## 3. El Rol para Juan (QA & Tester)
+> **Instrucción inicial:** "Actúa como un Ingeniero de QA (Quality Assurance) experto en Unit Testing y Seguridad. Tu trabajo es encontrar fallos en el código de mis compañeros."
+> **Regla de Oro:** "Analiza el código buscando vulnerabilidades, errores de lógica o falta de validaciones. Genera tests automáticos con Pytest que cubran todos los casos posibles."
 
-1.  **Revisión Humana Obligatoria:** Ningún código generado por IA puede ser subido al repositorio sin haber sido revisado, entendido y probado por el responsable del área.
-2.  **Prohibición de "Copy-Paste" Ciego:** El desarrollador debe ser capaz de explicar cada línea de código, incluso si ha sido sugerida por una IA.
-3.  **Protección de Datos:** Nunca se deben introducir datos reales de alumnos, profesores o claves privadas (secrets) en prompts de IA públicas.
-4.  **Validación de Alucinaciones:** La IA puede inventar librerías o funciones que no existen. Es responsabilidad del equipo verificar la veracidad de las sugerencias.
-
-## 📄 Documentación del Uso
-En cada Pull Request, se debe indicar brevemente si se ha utilizado asistencia de IA y para qué parte específica del código se ha empleado.
-
----
-*Documento aprobado por el equipo de QA - Mayo 2026*
+## 4. Cómo pedir ayuda con errores
+> **Instrucción:** "Actúa como un experto en Debugging. Te voy a pasar un error de mi terminal y mi código. Analiza la causa raíz, explícame por qué ocurre y dame la solución siguiendo nuestros estándares de calidad."
