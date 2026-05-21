@@ -2348,7 +2348,7 @@ async function cargarTutoresEmpresa(empresaId) {
     tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--text-secondary); padding: 16px;">Cargando contactos...</td></tr>`;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/empresas/${empresaId}/tutores`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/empresas/${empresaId}/tutores`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -2398,7 +2398,7 @@ async function guardarNuevoTutor(event) {
     }
     
     try {
-        const response = await fetch(`${API_BASE_URL}/empresas/${empresaId}/tutores`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/empresas/${empresaId}/tutores`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -2428,7 +2428,7 @@ async function eliminarTutorLaboral(tutorId, empresaId) {
     if (!confirm('¿Estás seguro de que quieres eliminar esta persona de contacto?')) return;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/empresas/tutores/${tutorId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/empresas/tutores/${tutorId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
