@@ -1,7 +1,5 @@
 // js/plazas.js
 
-const hostname = window.location.hostname || 'localhost';
-const protocol = window.location.protocol;
 const API_BASE_URL = `gestor-ffeoe-mpj-production.up.railway.app`;
 
 

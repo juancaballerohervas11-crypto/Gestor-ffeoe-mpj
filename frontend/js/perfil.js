@@ -2,8 +2,6 @@
 // Modal de perfil de usuario
 
 
-const hostname = window.location.hostname || 'localhost';
-const protocol = window.location.protocol;
 const API_BASE = `gestor-ffeoe-mpj-production.up.railway.app`; // ASEGURAR de que el backend esté en este puerto
 
 
