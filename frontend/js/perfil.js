@@ -2,7 +2,7 @@
 // Modal de perfil de usuario
 
 
-const API_BASE = `gestor-ffeoe-mpj-production.up.railway.app`; // ASEGURAR de que el backend esté en este puerto
+const API_BASE = `https://gestor-ffeoe-mpj-production.up.railway.app`; // ASEGURAR de que el backend esté en este puerto
 
 
 

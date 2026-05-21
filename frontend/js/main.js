@@ -5,7 +5,7 @@ import { loadPlazasData, initPlazasEvents } from './plazas.js';
 
 
 
-const API_BASE_URL = `gestor-ffeoe-mpj-production.up.railway.app`; // Asegúrate de que el backend esté en este puerto y la ip sea la IPv4 del host de la aplicación
+const API_BASE_URL = `https://gestor-ffeoe-mpj-production.up.railway.app`; // Asegúrate de que el backend esté en este puerto y la ip sea la IPv4 del host de la aplicación
 let currentUserRole = null;
 let currentUserEmail = null;
 let allAlumnos = [];
