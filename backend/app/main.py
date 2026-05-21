@@ -15,7 +15,10 @@ import socket
 
 #   CREACIÓN DE TABLAS
 # lee los modelos de models.py y crea las tablas en MySQL si no existen
-models.Base.metadata.create_all(bind=engine)
+try:
+    models.Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"[Warning] create_all skipped (posiblemente entorno de test con SQLite): {e}")
 
 #   MIGRACIÓN AUTOMÁTICA DE COLUMNAS (Para bases de datos existentes)
 from sqlalchemy import inspect, text

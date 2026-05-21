@@ -9,7 +9,10 @@ profesores_ciclos = Table(
     Column('ciclo_id', Integer, ForeignKey('ciclos.id'))
 )
 
+import os
 try:
+    if os.environ.get("TESTING") == "true":
+        raise ImportError("Testing environment uses SQLite which doesn't support LONGTEXT")
     from sqlalchemy.dialects.mysql import LONGTEXT
     profile_pic_type = LONGTEXT
 except ImportError:
