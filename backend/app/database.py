@@ -15,13 +15,7 @@ if os.getenv("TESTING") == "true":
         connect_args={"check_same_thread": False}
     )
 else:
-    engine = create_engine(
-        DATABASE_URL,
-        connect_args={
-            "client_flag": 0,
-            "auth_plugin_map": "mysql_native_password"
-        }
-    )
+    engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
