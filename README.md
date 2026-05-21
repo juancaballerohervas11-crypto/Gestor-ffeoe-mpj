@@ -54,29 +54,6 @@ En este repositorio vamos a ver el flujo de trabajo de un Gestor web para la asi
 
 
 
-##  Estado del Proyecto: **Fase 2 - Desarrollo Activo** 🚀
-
-Actualmente hemos completado:
-
-- [x] Configuración del repositorio y protección de ramas.
-
-- [x] Definición de estándares de calidad ([CONTRIBUTING.md](./CONTRIBUTING.md)).
-
-- [x] Guía de uso de IA para el equipo.
-
-- [x] Diseño inicial de la Base de Datos Relacional.
-
-- [x] Esqueleto de la documentación Swagger.
-
-- [x] Backend funcional: endpoints REST con FastAPI y autenticación JWT.
-
-- [x] Frontend funcional: dashboard Vanilla JS con gestión de ciclos, alumnos, empresas y profesores.
-
-- [x] Importación masiva por CSV (alumnos y empresas).
-
-- [x] Subida y descarga de CV en PDF.
-
-- [x] Campos DNI para alumnos y datos completos de contacto para empresas.
 
 
 ##  Cómo Contribuir
